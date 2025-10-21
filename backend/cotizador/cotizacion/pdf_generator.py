@@ -25,14 +25,15 @@ def generar_pdf_cotizacion(cotizacion):
     c = canvas_module.Canvas(buffer, pagesize=A4)
     width, height = A4
 
-    # --- Encabezado azul curvo ---
-    c.setFillColorRGB(0.13, 0.22, 0.38)  # azul oscuro
-    c.saveState()
-    c.roundRect(-40, height-90, width+80, 120, 60, fill=1, stroke=0)
-    c.restoreState()
+
+    # --- Imagen superior (top.png) ---
+    top_img_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'top.png')
+    if os.path.exists(top_img_path):
+        # La imagen se dibuja pegada al margen superior (y=altura-imagen)
+        c.drawImage(top_img_path, 0, height-80, width=width, height=80, mask='auto', preserveAspectRatio=True)
 
     # --- Logo ---
-    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'src', 'img', 'logo.png')
+    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'logo.png')
     if os.path.exists(logo_path):
         c.drawImage(logo_path, width-170, height-90, width=120, height=50, mask='auto', preserveAspectRatio=True)
 
