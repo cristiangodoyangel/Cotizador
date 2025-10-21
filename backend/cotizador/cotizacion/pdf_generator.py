@@ -13,70 +13,145 @@ from datetime import datetime
 
 
 def generar_pdf_cotizacion(cotizacion):
-    """Genera el PDF de una cotización"""
-    
-    # Crear la respuesta HTTP
+    """Genera el PDF de una cotización con formato personalizado"""
+    from reportlab.pdfgen import canvas as canvas_module
+    from reportlab.lib.utils import ImageReader
+    import io
+
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="cotizacion_{cotizacion.numero}.pdf"'
-    
-    # Crear el documento PDF
-    doc = SimpleDocTemplate(response, pagesize=A4)
-    story = []
-    
-    # Estilos
-    styles = getSampleStyleSheet()
-    
-    # Estilo personalizado para el título
-    titulo_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=18,
-        spaceAfter=30,
-        alignment=TA_CENTER,
-        textColor=colors.HexColor('#2E3B4E')
-    )
-    
-    # Estilo para información de empresa
-    empresa_style = ParagraphStyle(
-        'EmpresaStyle',
-        parent=styles['Normal'],
-        fontSize=10,
-        alignment=TA_LEFT,
-        spaceAfter=6
-    )
-    
-    # Estilo para información del cliente
-    cliente_style = ParagraphStyle(
-        'ClienteStyle',
-        parent=styles['Normal'],
-        fontSize=11,
-        spaceAfter=8,
-        leftIndent=20
-    )
-    
-    # Encabezado con información de la empresa
-    empresa_info = [
-        [f"<b>{cotizacion.empresa.nombre}</b>"],
-        [f"RUT: {cotizacion.empresa.rut}"],
-        [f"Dirección: {cotizacion.empresa.direccion}"],
-        [f"Teléfono: {cotizacion.empresa.telefono}"],
-        [f"Email: {cotizacion.empresa.email}"]
+
+    buffer = io.BytesIO()
+    c = canvas_module.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # --- Encabezado azul curvo ---
+    c.setFillColorRGB(0.13, 0.22, 0.38)  # azul oscuro
+    c.saveState()
+    c.roundRect(-40, height-90, width+80, 120, 60, fill=1, stroke=0)
+    c.restoreState()
+
+    # --- Logo ---
+    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'src', 'img', 'logo.png')
+    if os.path.exists(logo_path):
+        c.drawImage(logo_path, width-170, height-90, width=120, height=50, mask='auto', preserveAspectRatio=True)
+
+    # --- Tabla de empresa ---
+    empresa_data = [
+        ["Fecha:", cotizacion.fecha.strftime("%d/%m/%Y")],
+        ["Empresa:", cotizacion.empresa.nombre],
+        ["Rut:", cotizacion.empresa.rut],
+        ["Dirección:", cotizacion.empresa.direccion],
+        ["Fono:", cotizacion.empresa.telefono],
+        ["Email:", cotizacion.empresa.email],
     ]
-    
-    empresa_table = Table(empresa_info, colWidths=[6*inch])
+    from reportlab.platypus import Table, TableStyle
+    empresa_table = Table(empresa_data, colWidths=[1.5*inch, 3.5*inch])
     empresa_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.whitesmoke),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.grey),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
-    
-    story.append(empresa_table)
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    story = []
+    styles = getSampleStyleSheet()
     story.append(Spacer(1, 20))
-    
-    # Título de cotización
-    titulo = Paragraph("COTIZACIÓN", titulo_style)
-    story.append(titulo)
+    story.append(empresa_table)
+    story.append(Spacer(1, 10))
+
+    # --- Título COTIZACIÓN ---
+    titulo_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=16, alignment=TA_CENTER, textColor=colors.HexColor('#2E3B4E'), spaceAfter=10)
+    story.append(Paragraph('<b>COTIZACIÓN</b>', titulo_style))
+    story.append(Spacer(1, 5))
+
+    # --- Señores y atención ---
+    story.append(Paragraph('<b>Señores:</b>', styles['Normal']))
+    story.append(Paragraph('<b>Atención:</b>', styles['Normal']))
+    story.append(Spacer(1, 5))
+
+    # --- Mensaje principal ---
+    story.append(Paragraph('TENEMOS EL AGRADO DE ENVIAR NUESTRA COTIZACIÓN SEGÚN DETALLE:', styles['Normal']))
+    story.append(Spacer(1, 10))
+
+    # --- Tabla de ítems ---
+    items_data = [["Ítem", "Cantidad", "Característica"]]
+    for item in cotizacion.items.all():
+        items_data.append([
+            str(item.item_numero),
+            str(item.cantidad),
+            item.caracteristica
+        ])
+    items_table = Table(items_data, colWidths=[0.8*inch, 1*inch, 4.2*inch])
+    items_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2E3B4E')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    story.append(items_table)
+    story.append(Spacer(1, 10))
+
+    # --- Totales ---
+    totales_data = [
+        ["", "Valor Neto Total", f"${cotizacion.subtotal:,.0f}".replace(',', '.')],
+        ["", "IVA (19%)", f"${cotizacion.iva:,.0f}".replace(',', '.')],
+        ["", "Total", f"${cotizacion.total:,.0f}".replace(',', '.')],
+    ]
+    totales_table = Table(totales_data, colWidths=[0.8*inch, 2.2*inch, 3*inch])
+    totales_table.setStyle(TableStyle([
+        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+        ('FONTNAME', (1, 0), (2, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 11),
+        ('LINEABOVE', (1, 2), (2, 2), 1, colors.black),
+    ]))
+    story.append(totales_table)
+    story.append(Spacer(1, 10))
+
+    # --- Tiempo de entrega ---
+    story.append(Paragraph(f"<b>Tiempo de Entrega de Servicio</b> {cotizacion.tiempo_entrega}", styles['Normal']))
+    story.append(Spacer(1, 10))
+
+    # --- Firma ---
+    firma_style = ParagraphStyle('Firma', parent=styles['Normal'], alignment=TA_CENTER, fontSize=10, spaceBefore=20)
+    story.append(Spacer(1, 30))
+    story.append(Paragraph('<u>Yajasa Technology</u>', firma_style))
+    story.append(Paragraph('77.182.974-0', firma_style))
+    story.append(Spacer(1, 10))
+
+    # --- Nota ---
+    nota_style = ParagraphStyle('Nota', parent=styles['Normal'], fontSize=9, spaceBefore=10)
+    story.append(Paragraph('<b>NOTA:</b> La fecha de ejecución del servicio se coordinará con el Cliente.', nota_style))
+
+    # --- Footer azul con datos de contacto ---
+    def draw_footer(canvas, doc):
+        canvas.saveState()
+        canvas.setFillColorRGB(0.13, 0.22, 0.38)
+        canvas.rect(0, 0, width, 40, fill=1, stroke=0)
+        canvas.setFillColor(colors.white)
+        canvas.setFont('Helvetica', 9)
+        canvas.drawString(40, 20, f"+56 9 4292 0058    yajasa.technology@gmail.com")
+        canvas.restoreState()
+
+    # --- Construir PDF ---
+    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=40, rightMargin=40, topMargin=120, bottomMargin=60)
+    doc.build(story, onFirstPage=draw_footer, onLaterPages=draw_footer)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
     
     # Información de la cotización
     fecha_formateada = cotizacion.fecha.strftime("%d/%m/%Y")
