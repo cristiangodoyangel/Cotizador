@@ -1,292 +1,164 @@
 from django.http import HttpResponse
 from django.conf import settings
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
 from decimal import Decimal
 import os
-from datetime import datetime
+import io
 
 
 def generar_pdf_cotizacion(cotizacion):
     """Genera el PDF de una cotización con formato personalizado"""
-    from reportlab.pdfgen import canvas as canvas_module
-    from reportlab.lib.utils import ImageReader
-    import io
-
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="cotizacion_{cotizacion.numero}.pdf"'
 
     buffer = io.BytesIO()
-    c = canvas_module.Canvas(buffer, pagesize=A4)
     width, height = A4
 
-
-    # --- Imagen superior (top.png) ---
-    top_img_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'top.png')
-    if os.path.exists(top_img_path):
-        # La imagen se dibuja pegada al margen superior (y=altura-imagen)
-        c.drawImage(top_img_path, 0, height-80, width=width, height=80, mask='auto', preserveAspectRatio=True)
-
-    # --- Logo ---
-    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'logo.png')
-    if os.path.exists(logo_path):
-        c.drawImage(logo_path, width-170, height-90, width=120, height=50, mask='auto', preserveAspectRatio=True)
-
-    # --- Tabla de empresa ---
-    empresa_data = [
-        ["Fecha:", cotizacion.fecha.strftime("%d/%m/%Y")],
-        ["Empresa:", cotizacion.empresa.nombre],
-        ["Rut:", cotizacion.empresa.rut],
-        ["Dirección:", cotizacion.empresa.direccion],
-        ["Fono:", cotizacion.empresa.telefono],
-        ["Email:", cotizacion.empresa.email],
-    ]
-    from reportlab.platypus import Table, TableStyle
-    empresa_table = Table(empresa_data, colWidths=[1.5*inch, 3.5*inch])
-    empresa_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.whitesmoke),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 9),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.grey),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.grey),
-    ]))
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    story = []
+    # --- Paleta de Colores y Estilos ---
     styles = getSampleStyleSheet()
-    story.append(Spacer(1, 20))
-    story.append(empresa_table)
-    story.append(Spacer(1, 10))
+    color_principal = colors.HexColor('#2E3B4E') # Azul oscuro
+    color_secundario = colors.HexColor('#4A90E2') # Azul más claro
+    color_texto = colors.HexColor('#333333')
+    color_gris_claro = colors.HexColor('#F5F5F5')
 
-    # --- Título COTIZACIÓN ---
-    titulo_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=16, alignment=TA_CENTER, textColor=colors.HexColor('#2E3B4E'), spaceAfter=10)
-    story.append(Paragraph('<b>COTIZACIÓN</b>', titulo_style))
-    story.append(Spacer(1, 5))
+    styles.add(ParagraphStyle(name='Normal_Right', parent=styles['Normal'], alignment=TA_RIGHT, textColor=color_texto))
+    styles.add(ParagraphStyle(name='Body_Right_Bold', parent=styles['Normal'], alignment=TA_RIGHT, fontName='Helvetica-Bold', textColor=color_texto))
+    styles.add(ParagraphStyle(name='Titulo', parent=styles['h1'], alignment=TA_CENTER, textColor=color_principal, fontSize=20, spaceAfter=20))
+    styles.add(ParagraphStyle(name='Subtitulo', parent=styles['h2'], textColor=color_principal, fontSize=12, spaceBefore=10, spaceAfter=5))
+    styles.add(ParagraphStyle(name='Normal_Bold', parent=styles['Normal'], fontName='Helvetica-Bold', textColor=color_texto))
 
-    # --- Señores y atención ---
-    story.append(Paragraph('<b>Señores:</b>', styles['Normal']))
-    story.append(Paragraph('<b>Atención:</b>', styles['Normal']))
-    story.append(Spacer(1, 5))
+    story = []
 
-    # --- Mensaje principal ---
-    story.append(Paragraph('TENEMOS EL AGRADO DE ENVIAR NUESTRA COTIZACIÓN SEGÚN DETALLE:', styles['Normal']))
-    story.append(Spacer(1, 10))
+    # --- Encabezado ---
+    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'logo.png') # Asegúrate que esta ruta sea correcta
+    logo = Image(logo_path, width=2*inch, height=0.8*inch) if os.path.exists(logo_path) else Paragraph("Yajasa Technology", styles['h2'])
+    logo.hAlign = 'LEFT'
+
+    info_cotizacion_data = [
+        [Paragraph('<b>COTIZACIÓN</b>', styles['Body_Right_Bold']), Paragraph(f"Nº {cotizacion.numero}", styles['Normal_Right'])],
+        [Paragraph('<b>Fecha</b>', styles['Body_Right_Bold']), Paragraph(cotizacion.fecha.strftime("%d/%m/%Y"), styles['Normal_Right'])],
+    ]
+    info_cotizacion_table = Table(info_cotizacion_data, colWidths=[1.5*inch, 1.5*inch])
+    info_cotizacion_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+    ]))
+
+    header_table = Table([[logo, info_cotizacion_table]], colWidths=[width/2 - 50, width/2 - 50])
+    header_table.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP')]))
+    story.append(header_table)
+    story.append(Spacer(1, 0.4*inch))
+
+    # --- Información del Cliente y Empresa ---
+    empresa_info = f"""
+        <b>{cotizacion.empresa.nombre}</b><br/>
+        RUT: {cotizacion.empresa.rut}<br/>
+        {cotizacion.empresa.direccion}<br/>
+        Fono: {cotizacion.empresa.telefono}<br/>
+        Email: {cotizacion.empresa.email}
+    """
+    cliente_info = f"""
+        <b>CLIENTE:</b><br/>
+        <b>Empresa:</b> {cotizacion.cliente_empresa or 'N/A'}<br/>
+        <b>Atención:</b> {cotizacion.cliente_nombre or 'N/A'}<br/>
+        <b>Email:</b> {cotizacion.cliente_email or 'N/A'}<br/>
+        <b>Teléfono:</b> {cotizacion.cliente_telefono or 'N/A'}
+    """
+    info_table_data = [[Paragraph(empresa_info, styles['Normal']), Paragraph(cliente_info, styles['Normal'])]]
+    info_table = Table(info_table_data, colWidths=[width/2 - 50, width/2 - 50])
+    story.append(info_table)
+    story.append(Spacer(1, 0.3*inch))
+
+    # --- Asunto de la cotización ---
+    story.append(Paragraph(f"<b>Asunto:</b> {cotizacion.asunto}", styles['Normal_Bold']))
+    storyappend(Spacer(1, 0.3*inch))
 
     # --- Tabla de ítems ---
-    items_data = [["Ítem", "Cantidad", "Característica"]]
+    story.append(Paragraph("<b>DETALLE DE LA COTIZACIÓN</b>", styles['Subtitulo']))
+    items_data = [[
+        Paragraph('<b>Ítem</b>', styles['Normal']),
+        Paragraph('<b>Descripción</b>', styles['Normal']),
+        Paragraph('<b>Cant.</b>', styles['Normal_Right']),
+        Paragraph('<b>V. Unitario</b>', styles['Normal_Right']),
+        Paragraph('<b>Total</b>', styles['Normal_Right'])
+    ]]
+
     for item in cotizacion.items.all():
         items_data.append([
-            str(item.item_numero),
-            str(item.cantidad),
-            item.caracteristica
+            Paragraph(str(item.item_numero), styles['Normal']),
+            Paragraph(item.caracteristica, styles['Normal']),
+            Paragraph(str(item.cantidad), styles['Normal_Right']),
+            Paragraph(f"${item.valor_unitario:,.0f}".replace(',', '.'), styles['Normal_Right']),
+            Paragraph(f"${item.total:,.0f}".replace(',', '.'), styles['Normal_Right'])
         ])
-    items_table = Table(items_data, colWidths=[0.8*inch, 1*inch, 4.2*inch])
+
+    items_table = Table(items_data, colWidths=[0.5*inch, 3.5*inch, 0.7*inch, 1.2*inch, 1.2*inch])
     items_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2E3B4E')),
+        ('BACKGROUND', (0, 0), (-1, 0), color_principal),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 10),
-        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 9),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.grey),
+        ('BOX', (0, 0), (-1, -1), 0.25, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, color_gris_claro]),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(items_table)
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1, 0.2*inch))
 
     # --- Totales ---
     totales_data = [
-        ["", "Valor Neto Total", f"${cotizacion.subtotal:,.0f}".replace(',', '.')],
-        ["", "IVA (19%)", f"${cotizacion.iva:,.0f}".replace(',', '.')],
-        ["", "Total", f"${cotizacion.total:,.0f}".replace(',', '.')],
+        ['', Paragraph('<b>Valor Neto Total</b>', styles['Body_Right_Bold']), Paragraph(f"${cotizacion.subtotal:,.0f}".replace(',', '.'), styles['Normal_Right'])],
+        ['', Paragraph('<b>IVA (19%)</b>', styles['Body_Right_Bold']), Paragraph(f"${cotizacion.iva:,.0f}".replace(',', '.'), styles['Normal_Right'])],
+        ['', Paragraph('<b>TOTAL</b>', styles['Body_Right_Bold']), Paragraph(f"<b>${cotizacion.total:,.0f}</b>".replace(',', '.'), styles['Normal_Right'])],
     ]
-    totales_table = Table(totales_data, colWidths=[0.8*inch, 2.2*inch, 3*inch])
+    totales_table = Table(totales_data, colWidths=[4.9*inch, 1.2*inch, 1.2*inch])
     totales_table.setStyle(TableStyle([
-        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-        ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
-        ('FONTNAME', (1, 0), (2, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 11),
-        ('LINEABOVE', (1, 2), (2, 2), 1, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LINEABOVE', (1, 2), (2, 2), 1, color_principal),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
     ]))
     story.append(totales_table)
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1, 0.4*inch))
 
-    # --- Tiempo de entrega ---
-    story.append(Paragraph(f"<b>Tiempo de Entrega de Servicio</b> {cotizacion.tiempo_entrega}", styles['Normal']))
-    story.append(Spacer(1, 10))
+    # --- Observaciones y Tiempo de entrega ---
+    if cotizacion.observaciones:
+        story.append(Paragraph("<b>Observaciones</b>", styles['Subtitulo']))
+        story.append(Paragraph(cotizacion.observaciones, styles['Normal']))
+        story.append(Spacer(1, 0.2*inch))
 
-    # --- Firma ---
-    firma_style = ParagraphStyle('Firma', parent=styles['Normal'], alignment=TA_CENTER, fontSize=10, spaceBefore=20)
-    story.append(Spacer(1, 30))
-    story.append(Paragraph('<u>Yajasa Technology</u>', firma_style))
-    story.append(Paragraph('77.182.974-0', firma_style))
-    story.append(Spacer(1, 10))
+    story.append(Paragraph("<b>Tiempo de Entrega</b>", styles['Subtitulo']))
+    story.append(Paragraph(cotizacion.tiempo_entrega, styles['Normal']))
+    story.append(Spacer(1, 0.4*inch))
 
-    # --- Nota ---
-    nota_style = ParagraphStyle('Nota', parent=styles['Normal'], fontSize=9, spaceBefore=10)
-    story.append(Paragraph('<b>NOTA:</b> La fecha de ejecución del servicio se coordinará con el Cliente.', nota_style))
-
-    # --- Footer azul con datos de contacto ---
+    # --- Footer ---
     def draw_footer(canvas, doc):
         canvas.saveState()
-        canvas.setFillColorRGB(0.13, 0.22, 0.38)
-        canvas.rect(0, 0, width, 40, fill=1, stroke=0)
+        canvas.setFillColor(color_principal)
+        canvas.rect(0, 0, width, 0.5*inch, fill=1, stroke=0)
         canvas.setFillColor(colors.white)
         canvas.setFont('Helvetica', 9)
-        canvas.drawString(40, 20, f"+56 9 4292 0058    yajasa.technology@gmail.com")
+        canvas.drawCentredString(width/2, 0.25*inch, f"{cotizacion.empresa.nombre} | {cotizacion.empresa.email} | {cotizacion.empresa.telefono}")
         canvas.restoreState()
 
     # --- Construir PDF ---
-    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=40, rightMargin=40, topMargin=120, bottomMargin=60)
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=0.75*inch,
+        rightMargin=0.75*inch,
+        topMargin=0.75*inch,
+        bottomMargin=0.75*inch
+    )
     doc.build(story, onFirstPage=draw_footer, onLaterPages=draw_footer)
 
     pdf = buffer.getvalue()
     buffer.close()
     response.write(pdf)
-    return response
-    
-    # Información de la cotización
-    fecha_formateada = cotizacion.fecha.strftime("%d/%m/%Y")
-    
-    info_cotizacion = [
-        ["Fecha:", fecha_formateada],
-        ["Cotización N°:", str(cotizacion.numero)],
-        ["Asunto:", cotizacion.asunto]
-    ]
-    
-    if cotizacion.cliente_nombre or cotizacion.cliente_empresa:
-        story.append(Paragraph("<b>Señores:</b>", styles['Normal']))
-        story.append(Paragraph("<b>Atención:</b>", styles['Normal']))
-        
-        if cotizacion.cliente_empresa:
-            story.append(Paragraph(f"Empresa: {cotizacion.cliente_empresa}", cliente_style))
-        if cotizacion.cliente_nombre:
-            story.append(Paragraph(f"Contacto: {cotizacion.cliente_nombre}", cliente_style))
-        
-        story.append(Spacer(1, 10))
-    
-    story.append(Paragraph("<b>TENEMOS EL AGRADO DE ENVIAR NUESTRA COTIZACIÓN SEGÚN DETALLE:</b>", styles['Normal']))
-    story.append(Spacer(1, 20))
-    
-    # Tabla de información de cotización
-    info_table = Table(info_cotizacion, colWidths=[1.5*inch, 4*inch])
-    info_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-    ]))
-    
-    story.append(info_table)
-    story.append(Spacer(1, 20))
-    
-    # Tabla de items
-    items_data = [["Item", "Cantidad", "Característica", "Valor Neto Total"]]
-    
-    for item in cotizacion.items.all():
-        items_data.append([
-            str(item.item_numero),
-            str(item.cantidad),
-            item.caracteristica,
-            f"${item.total:,.0f}".replace(',', '.')
-        ])
-    
-    items_table = Table(items_data, colWidths=[0.8*inch, 1*inch, 3.5*inch, 1.5*inch])
-    items_table.setStyle(TableStyle([
-        # Encabezado
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 10),
-        
-        # Contenido
-        ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # Item
-        ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Cantidad
-        ('ALIGN', (2, 1), (2, -1), 'LEFT'),    # Característica
-        ('ALIGN', (3, 1), (3, -1), 'RIGHT'),   # Valor
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 9),
-        
-        # Bordes
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-    ]))
-    
-    story.append(items_table)
-    story.append(Spacer(1, 30))
-    
-    # Totales
-    totales_data = [
-        ["Subtotal:", f"${cotizacion.subtotal:,.0f}".replace(',', '.')],
-        ["IVA (19%):", f"${cotizacion.iva:,.0f}".replace(',', '.')],
-        ["Total:", f"${cotizacion.total:,.0f}".replace(',', '.')]
-    ]
-    
-    totales_table = Table(totales_data, colWidths=[4*inch, 1.5*inch])
-    totales_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 11),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-        # Línea superior para el total
-        ('LINEABOVE', (0, 2), (-1, 2), 1, colors.black),
-    ]))
-    
-    story.append(totales_table)
-    story.append(Spacer(1, 30))
-    
-    # Tiempo de entrega
-    story.append(Paragraph(f"<b>Tiempo de Entrega:</b> {cotizacion.tiempo_entrega}", styles['Normal']))
-    story.append(Spacer(1, 40))
-    
-    # Observaciones si existen
-    if cotizacion.observaciones:
-        story.append(Paragraph(f"<b>Observaciones:</b>", styles['Normal']))
-        story.append(Paragraph(cotizacion.observaciones, styles['Normal']))
-        story.append(Spacer(1, 30))
-    
-    # Firma
-    firma_data = [
-        ["", ""],
-        [f"<b>{cotizacion.empresa.nombre}</b>", ""],
-        [cotizacion.empresa.rut, ""]
-    ]
-    
-    firma_table = Table(firma_data, colWidths=[3*inch, 3*inch])
-    firma_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
-        ('FONTNAME', (0, 1), (0, 1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ('LINEABOVE', (0, 0), (0, 0), 1, colors.black),
-    ]))
-    
-    story.append(firma_table)
-    story.append(Spacer(1, 30))
-    
-    # Nota final
-    nota = Paragraph(
-        "<b>NOTA:</b> La fecha de ejecución del servicio se coordinará con el Cliente.", 
-        styles['Normal']
-    )
-    story.append(nota)
-    
-    # Generar el PDF
-    doc.build(story)
-    
     return response

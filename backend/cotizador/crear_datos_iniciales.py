@@ -41,7 +41,7 @@ def crear_datos_iniciales():
             cliente_empresa="Empresa Ejemplo S.A.",
             cliente_email="juan@ejemplo.com",
             cliente_telefono="+569-12345678",
-            asunto="Desarrollo de Sistema Web",
+            asunto="Desarrollo de Sistema Web", # Coincide con el modelo actualizado
             observaciones="Cotización para el desarrollo de un sistema web personalizado.",
             tiempo_entrega="15 días hábiles, esperando que la oferta sea de su aceptación"
         )

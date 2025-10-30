@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
 from django.db import models
 from django.utils import timezone
 from rest_framework import generics, status
@@ -36,10 +36,21 @@ def obtener_siguiente_numero(request):
 
 
 @api_view(['POST'])
+@transaction.atomic
 def crear_cotizacion_completa(request):
     """Crea una cotización completa con sus items"""
     try:
         data = request.data
+
+        # Asegurarse de que la empresa por defecto (ID=1) exista
+        # O permitir que el frontend envíe el ID de la empresa si hay múltiples
+        try:
+            empresa_instance = Empresa.objects.get(pk=1)
+        except Empresa.DoesNotExist:
+            return Response(
+                {'error': 'La empresa por defecto (ID=1) no existe. Por favor, asegúrese de que haya una empresa registrada con ID 1.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # Crear la cotización
         cotizacion_data = {
@@ -47,7 +58,8 @@ def crear_cotizacion_completa(request):
             'cliente_empresa': data.get('cliente_empresa', ''),
             'cliente_email': data.get('cliente_email', ''),
             'cliente_telefono': data.get('cliente_telefono', ''),
-            'asunto': data.get('asunto', 'Cotización de Servicios'),
+            'asunto': data.get('asunto', 'Cotización de Servicios'), # Asegúrate que el frontend envíe 'asunto'
+            'empresa': empresa_instance.id, # Asignar explícitamente la empresa
             'observaciones': data.get('observaciones', ''),
             'tiempo_entrega': data.get('tiempo_entrega', '1 Día, Esperando que la oferta sea de su aceptación'),
         }
@@ -64,6 +76,8 @@ def crear_cotizacion_completa(request):
                 if item_serializer.is_valid():
                     item_serializer.save()
                 else:
+                    # Al estar en una transacción, si hay un error aquí,
+                    # la cotización creada al principio no se guardará.
                     return Response(
                         {'error': 'Error en los items', 'details': item_serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST

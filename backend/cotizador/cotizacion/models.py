@@ -43,7 +43,6 @@ from decimal import Decimal
 
 
 class Empresa(models.Model):
-    """Modelo para almacenar la información de la empresa"""
     nombre = models.CharField(max_length=200, default="Yajasa Technology")
     rut = models.CharField(max_length=20, default="77.182.974-0")
     direccion = models.TextField(default="Uribe 636 of 707, C. de Negocios, Antofagasta")
@@ -60,7 +59,7 @@ class Empresa(models.Model):
 
 
 class Cotizacion(models.Model):
-    """Modelo principal para las cotizaciones"""
+    
     numero = models.PositiveIntegerField(unique=True, editable=False)
     fecha = models.DateField(auto_now_add=True)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, default=1)
@@ -72,7 +71,7 @@ class Cotizacion(models.Model):
     cliente_telefono = models.CharField(max_length=20, blank=True)
     
     # Detalles de la cotización
-    detalle = models.CharField(max_length=200, default="Cotización de Servicios")
+    asunto = models.CharField(max_length=200, default="Cotización de Servicios")
     observaciones = models.TextField(blank=True)
     tiempo_entrega = models.CharField(
         max_length=200, 
@@ -99,7 +98,7 @@ class Cotizacion(models.Model):
         validators=[MinValueValidator(Decimal('0.00'))]
     )
     
-    # Control
+   
     creada_en = models.DateTimeField(auto_now_add=True)
     actualizada_en = models.DateTimeField(auto_now=True)
     activa = models.BooleanField(default=True)
@@ -111,7 +110,6 @@ class Cotizacion(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.numero:
-            # Generar número correlativo
             ultimo_numero = Cotizacion.objects.aggregate(
                 max_numero=models.Max('numero')
             )['max_numero']
@@ -119,19 +117,17 @@ class Cotizacion(models.Model):
         
         super().save(*args, **kwargs)
         
-        # Calcular totales después de guardar (para que tenga PK)
         if self.pk:
             self.calcular_totales()
             if self.subtotal != 0 or self.iva != 0 or self.total != 0:
-                # Solo guardar nuevamente si los totales cambiaron
                 super().save(update_fields=['subtotal', 'iva', 'total'])
     
     def calcular_totales(self):
-        """Calcula los totales basado en los items"""
-        if self.pk:  # Solo si ya está guardada
+        
+        if self.pk:
             items = self.items.all()
             self.subtotal = sum(item.total for item in items)
-            self.iva = self.subtotal * Decimal('0.19')  # 19% IVA Chile
+            self.iva = self.subtotal * Decimal('0.19')
             self.total = self.subtotal + self.iva
     
     def __str__(self):
