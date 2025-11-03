@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.db import transaction
 from django.db import models
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -36,6 +37,7 @@ def obtener_siguiente_numero(request):
 
 
 @api_view(['POST'])
+@csrf_exempt
 @transaction.atomic
 def crear_cotizacion_completa(request):
     """Crea una cotización completa con sus items"""
@@ -146,3 +148,16 @@ def estadisticas(request):
             {'error': str(e)}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+def cliente_list(request):
+    """
+    Obtiene una lista de clientes únicos a partir de las cotizaciones.
+    """
+    try:
+        clientes = Cotizacion.objects.filter(activa=True).values(
+            'cliente_empresa', 'cliente_nombre', 'cliente_email', 'cliente_telefono'
+        ).distinct()
+        return Response(list(clientes))
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -13,4 +13,5 @@ urlpatterns = [
     path('crear-completa/', views.crear_cotizacion_completa, name='crear-cotizacion-completa'),
     path('cotizaciones/<int:cotizacion_id>/pdf/', views.generar_pdf, name='generar-pdf'),
     path('estadisticas/', views.estadisticas, name='estadisticas'),
+    path('clientes/', views.cliente_list, name='cliente-list'),
 ]

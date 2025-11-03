@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import ensure_csrf_cookie
 from cotizacion.models import Cotizacion, ItemCotizacion, Empresa
 
 
+@ensure_csrf_cookie
 def home(request):
     """Vista principal que muestra información del sistema"""
     context = {
