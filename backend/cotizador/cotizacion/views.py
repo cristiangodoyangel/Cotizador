@@ -62,6 +62,9 @@ def crear_cotizacion_completa(request):
             'empresa': empresa_instance.id, # Asignar explícitamente la empresa
             'observaciones': data.get('observaciones', ''),
             'tiempo_entrega': data.get('tiempo_entrega', '1 Día, Esperando que la oferta sea de su aceptación'),
+            'subtotal': data.get('subtotal', 0),
+            'iva': data.get('iva', 0),
+            'total': data.get('total', 0),
         }
         
         cotizacion_serializer = CotizacionSerializer(data=cotizacion_data)
@@ -70,8 +73,9 @@ def crear_cotizacion_completa(request):
             
             # Crear los items
             items_data = data.get('items', [])
-            for item_data in items_data:
+            for i, item_data in enumerate(items_data, 1):
                 item_data['cotizacion'] = cotizacion.id
+                item_data['item_numero'] = i # Asignar el número de ítem
                 item_serializer = ItemCotizacionSerializer(data=item_data)
                 if item_serializer.is_valid():
                     item_serializer.save()

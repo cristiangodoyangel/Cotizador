@@ -18,9 +18,6 @@ class ItemCotizacionSerializer(serializers.ModelSerializer):
 
 class CotizacionSerializer(serializers.ModelSerializer):
     items = ItemCotizacionSerializer(many=True, read_only=True)
-    subtotal = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
-    iva = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
-    total = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     numero = serializers.IntegerField(read_only=True)
     
     class Meta:

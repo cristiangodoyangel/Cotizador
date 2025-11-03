@@ -1,43 +1,4 @@
 from django.db import models
-
-class Empresa(models.Model):
-    nombre = models.CharField(max_length=255) # Yajasa Technology
-    rut = models.CharField(max_length=20) # 77.182.974-0
-    direccion = models.CharField(max_length=255) # Uribe 636 of 707, C. de Negocios, Antofagasta
-    telefono = models.CharField(max_length=20) # +569-42920058
-    email = models.EmailField() # Yajasa.technology@gmail.com
-
-    def __str__(self):
-        return self.nombre
-
-class Cotizacion(models.Model):
-    numero = models.AutoField(primary_key=True)
-    fecha = models.DateField(auto_now_add=True)
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='cotizaciones')
-
-    # Información empresa solicitante
-    cliente_nombre = models.CharField(max_length=255)
-    cliente_empresa = models.CharField(max_length=255)
-    cliente_email = models.EmailField()
-    cliente_telefono = models.CharField(max_length=20)
-
-    # Detalles de la cotización
-    detalle = models.CharField(max_length=255)
-    observaciones = models.TextField(blank=True)
-    tiempo_entrega = models.CharField(max_length=100)
-
-    # Totales
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    iva = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    # Control
-    creada_en = models.DateTimeField(auto_now_add=True)
-    actualizada_en = models.DateTimeField(auto_now=True)
-    activa = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f"Cotización {self.numero} - {self.cliente_nombre}"
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 
