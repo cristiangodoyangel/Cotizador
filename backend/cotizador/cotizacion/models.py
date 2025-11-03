@@ -30,6 +30,7 @@ class Cotizacion(models.Model):
     cliente_empresa = models.CharField(max_length=200, blank=True)
     cliente_email = models.EmailField(blank=True)
     cliente_telefono = models.CharField(max_length=20, blank=True)
+    cliente_direccion = models.CharField(max_length=255, blank=True)
     
     # Detalles de la cotización
     asunto = models.CharField(max_length=200, default="Cotización de Servicios")

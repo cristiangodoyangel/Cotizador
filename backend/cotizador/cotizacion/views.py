@@ -60,6 +60,7 @@ def crear_cotizacion_completa(request):
             'cliente_empresa': data.get('cliente_empresa', ''),
             'cliente_email': data.get('cliente_email', ''),
             'cliente_telefono': data.get('cliente_telefono', ''),
+            'cliente_direccion': data.get('cliente_direccion', ''),
             'asunto': data.get('asunto', 'Cotización de Servicios'), # Asegúrate que el frontend envíe 'asunto'
             'empresa': empresa_instance.id, # Asignar explícitamente la empresa
             'observaciones': data.get('observaciones', ''),
@@ -156,7 +157,7 @@ def cliente_list(request):
     """
     try:
         clientes = Cotizacion.objects.filter(activa=True).values(
-            'cliente_empresa', 'cliente_nombre', 'cliente_email', 'cliente_telefono'
+            'cliente_empresa', 'cliente_nombre', 'cliente_email', 'cliente_telefono', 'cliente_direccion'
         ).distinct()
         return Response(list(clientes))
     except Exception as e:
