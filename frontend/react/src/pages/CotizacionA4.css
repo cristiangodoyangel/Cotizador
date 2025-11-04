@@ -131,35 +131,54 @@
 /* --- SECCIÓN DE IMPRESIÓN (SIMPLE Y CORRECTA) --- */
 /* ================================================= */
 
+/* ================================================= */
+/* --- SECCIÓN DE IMPRESIÓN (CORREGIDA Y COMPLETA) --- */
+/* ================================================= */
+/* ================================================= */
+/* --- SECCIÓN DE IMPRESIÓN (CORREGIDA Y COMPLETA) --- */
+/* ================================================= */
+
 @page {
   size: A4;
   margin: 0; /* Sin márgenes del navegador */
 }
 
 @media print {
-  /* Oculta los botones */
-  .no-print,
-  .no-print * {
+  
+  /* 1. Oculta TODO el contenido del body por defecto */
+  body * {
+    visibility: hidden;
+  }
+
+  /* 2. Muestra SOLAMENTE el contenedor de contenido y sus hijos */
+  /* ¡Esta es la regla más importante que faltaba! */
+  .cotizacion-content, .cotizacion-content * {
+    visibility: visible;
+  }
+
+  /* 3. Coloca el contenido al inicio de la página de impresión */
+  /* y le da los márgenes (padding) deseados. */
+  .cotizacion-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 3.5rem; /* Tu margen de impresión deseado */
+    box-sizing: border-box; /* Para que el padding no desborde */
+  }
+
+  /* 4. Oculta explícitamente cualquier cosa con .no-print */
+  /* (Esto es un seguro extra, aunque ya estaría oculto por el paso 1) */
+  .no-print, .no-print * {
     display: none !important;
   }
 
-  /* Quita la decoración de pantalla (margen y sombra) */
-  .cotizacion-a4 {
-    margin: 0;
-    box-shadow: none;
-    /* La 'width: 210mm' y 'min-height: 297mm' de los estilos
-       de pantalla se mantienen, lo cual es correcto. */
-  }
-
-  /* ¡AQUÍ ESTÁ TU MARGEN! */
-  /* Define el margen deseado SÓLO para la impresión */
-  .cotizacion-content {
-    padding: 3.5rem; /* O 4.5rem, o lo que quieras */
-  }
-  
-  /* Forzamos que el body no tenga márgenes de más */
+  /* 5. Resetea el body (por si acaso) */
   body {
     margin: 0;
     padding: 0;
   }
+  
+  /* NOTA: No necesitamos resetear .cotizacion-a4 (con su sombra y margen) 
+     porque ya está oculto gracias a 'body * { visibility: hidden; }' */
 }

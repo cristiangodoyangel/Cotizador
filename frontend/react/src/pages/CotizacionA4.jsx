@@ -7,31 +7,37 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
   if (!cotizacion) return null;
   const { cliente, items } = cotizacion;
 
-  // Función de impresión que cambia el nombre del archivo PDF
-  const handlePrint = () => {
-    // 1. Guardar el título original
+  const [isAlreadyPrinted, setIsAlreadyPrinted] = React.useState(false);
+
+  // useEffect para manejar la restauración del título después de imprimir.
+  // Esto evita que se agreguen múltiples listeners si el componente se renderiza varias veces.
+  React.useEffect(() => {
     const originalTitle = document.title;
 
-    // 2. Crear el nuevo título
+    const restoreTitle = () => {
+      document.title = originalTitle;
+    };
+
+    window.addEventListener("afterprint", restoreTitle);
+
+    // Función de limpieza: se ejecuta cuando el componente se desmonta.
+    return () => {
+      window.removeEventListener("afterprint", restoreTitle);
+      console.log("useEffect cleanup");
+    };
+  }, []); // El array vacío asegura que esto se ejecute solo una vez (al montar).
+
+  const handlePrint = () => {
+    // Cambiamos el título justo antes de imprimir.
+    if (isAlreadyPrinted) {
+      return;
+    }
+    // El useEffect se encargará de restaurarlo.
     const cotizacionId = cotizacion.id || cotizacion.numero || "nuevo";
     const newTitle = `cotizacion-${cotizacionId}`;
     document.title = newTitle;
 
-    // 3. Llamar a la función de impresión
     window.print();
-
-    // 4. Restaurar el título original
-    const restoreTitle = () => {
-      document.title = originalTitle;
-      window.removeEventListener("afterprint", restoreTitle);
-    };
-    window.addEventListener("afterprint", restoreTitle);
-
-    setTimeout(() => {
-      if (document.title === newTitle) {
-        document.title = originalTitle;
-      }
-    }, 2000);
   };
 
   return (
