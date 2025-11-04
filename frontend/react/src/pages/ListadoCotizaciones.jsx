@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom"; // 1. Importar hooks
 import {
   listarCotizaciones,
   eliminarCotizacion,
@@ -8,6 +9,9 @@ import "./Listado.css";
 import CotizacionA4 from "./CotizacionA4"; // Importamos el componente A4
 
 const ListadoCotizaciones = () => {
+  const location = useLocation(); // 2. Obtener la ubicación para acceder al estado
+  const navigate = useNavigate(); // Para limpiar el estado después de usarlo
+
   const [cotizaciones, setCotizaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +34,16 @@ const ListadoCotizaciones = () => {
     };
 
     fetchCotizaciones();
-  }, []);
+
+    // 3. Comprobar si se pasó un ID de nueva cotización
+    const newCotizacionId = location.state?.newCotizacionId;
+    if (newCotizacionId) {
+      handleVerPdf(newCotizacionId);
+
+      // 4. Limpiar el estado de la ubicación para que el modal no se abra de nuevo si se recarga la página
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]); // Añadir dependencias al useEffect
 
   const formatCurrency = (value) => {
     return parseFloat(value).toLocaleString("es-CL", {
