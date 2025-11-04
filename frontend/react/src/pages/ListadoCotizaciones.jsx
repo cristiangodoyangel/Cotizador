@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; // 1. Importar hooks
 import {
   listarCotizaciones,
@@ -15,10 +15,19 @@ const ListadoCotizaciones = () => {
   const [cotizaciones, setCotizaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); // Estados para el modal
+
+  // Estados para el modal
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
+
+  // Estados para búsqueda, ordenamiento y paginación
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: "numero",
+    direction: "descending",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -52,13 +61,72 @@ const ListadoCotizaciones = () => {
     });
   };
 
-  // Lógica de paginación
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = cotizaciones.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(cotizaciones.length / itemsPerPage);
+  // Hook useMemo para procesar los datos (filtrar y ordenar) de forma eficiente
+  const processedItems = useMemo(() => {
+    let filteredItems = [...cotizaciones];
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    // Filtrado por término de búsqueda
+    if (searchTerm) {
+      filteredItems = filteredItems.filter(
+        (item) =>
+          item.numero
+            ?.toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.cliente_empresa
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.cliente_nombre
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.asunto?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Ordenamiento
+    if (sortConfig.key) {
+      filteredItems.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === "ascending" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filteredItems;
+  }, [cotizaciones, searchTerm, sortConfig]);
+
+  // Efecto para resetear la paginación a la página 1 cuando se busca o se ordena
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortConfig]);
+
+  // Hook useMemo para la paginación
+  const paginatedItems = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return processedItems.slice(indexOfFirstItem, indexOfLastItem);
+  }, [processedItems, currentPage, itemsPerPage]);
+
+  const currentItems = paginatedItems;
+  const totalPages = Math.ceil(processedItems.length / itemsPerPage);
+
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const requestSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
 
   const handleEliminar = async (cotizacionId) => {
     if (
@@ -113,60 +181,108 @@ const ListadoCotizaciones = () => {
         <h1>Listado de Cotizaciones</h1>
       </div>
 
+      <div className="controls-container">
+        <input
+          type="text"
+          placeholder="Buscar por N°, cliente, asunto..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
       <div className="card">
         <div className="table-responsive">
           <table className="data-table">
             <thead>
               <tr>
-                <th>Número</th>
-                <th>Fecha</th>
-                <th>Cliente</th>
+                <th onClick={() => requestSort("numero")}>
+                  Número{" "}
+                  {sortConfig.key === "numero" &&
+                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => requestSort("fecha")}>
+                  Fecha{" "}
+                  {sortConfig.key === "fecha" &&
+                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => requestSort("cliente_empresa")}>
+                  Cliente{" "}
+                  {sortConfig.key === "cliente_empresa" &&
+                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                </th>
                 <th>Asunto</th>
-                <th>Total</th>
+                <th onClick={() => requestSort("total")}>
+                  Total{" "}
+                  {sortConfig.key === "total" &&
+                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                </th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((cot) => (
-                <tr key={cot.numero}>
-                  <td>#{cot.numero}</td>
-                  <td>{new Date(cot.fecha).toLocaleDateString("es-CL")}</td>
-                  <td>{cot.cliente_empresa || cot.cliente_nombre}</td>
-                  <td>{cot.asunto}</td>
-                  <td>{formatCurrency(cot.total)}</td>
-                  <td className="actions-cell">
-                    <button
-                      onClick={() => handleVerPdf(cot.id)}
-                      className="btn-action"
-                    >
-                      PDF
-                    </button>
-                    <button
-                      onClick={() => handleEliminar(cot.id)}
-                      className="btn-action btn-danger"
-                    >
-                      Eliminar
-                    </button>
+              {currentItems.length > 0 ? (
+                currentItems.map((cot) => (
+                  <tr key={cot.numero}>
+                    <td>#{cot.numero}</td>
+                    <td>{new Date(cot.fecha).toLocaleDateString("es-CL")}</td>
+                    <td>{cot.cliente_empresa || cot.cliente_nombre}</td>
+                    <td>{cot.asunto}</td>
+                    <td>{formatCurrency(cot.total)}</td>
+                    <td className="actions-cell">
+                      <button
+                        onClick={() => handleVerPdf(cot.id)}
+                        className="btn-action"
+                      >
+                        PDF
+                      </button>
+                      <button
+                        onClick={() => handleEliminar(cot.id)}
+                        className="btn-action2"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: "center" }}>
+                    No se encontraron resultados.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
 
         {totalPages > 1 && (
           <div className="pagination">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              &laquo; Anterior
+            </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(
               (number) => (
                 <button
                   key={number}
                   onClick={() => paginate(number)}
-                  className={currentPage === number ? "active" : ""}
+                  className={`page-number ${
+                    currentPage === number ? "active" : ""
+                  }`}
                 >
                   {number}
                 </button>
               )
             )}
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Siguiente &raquo;
+            </button>
           </div>
         )}
       </div>

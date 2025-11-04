@@ -36,8 +36,6 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
 
   return (
     <div className="cotizacion-a4">
-      {/* ELIMINADO: <img src={topImage} ... /> */}
-
       <div className="cotizacion-content">
         <div className="cotizacion-header">
           <img src={logo} alt="Logo" className="cotizacion-logo-yasaja" />
@@ -63,7 +61,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
           </div>
         </div>
 
-        <h2>COTIZACIÓN</h2>
+        <h2>COTIZACIÓN N° {cotizacion.numero}</h2>
 
         <div className="cotizacion-cliente">
           <div>

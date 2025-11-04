@@ -1,3 +1,20 @@
+/* Contenedor para controles como la búsqueda */
+.controls-container {
+  margin-bottom: 1rem;
+  display: flex;
+  margin-left: 32px;
+  margin-top: 62px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -6,23 +23,25 @@
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1.5rem;
+  border: 1px solid var(--color-border); /* Borde exterior para la tabla */
 }
 
 .data-table th,
 .data-table td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border: 1px solid var(--color-border); /* Bordes para todas las celdas */
   white-space: nowrap;
 }
 
 .data-table th {
   font-weight: 600;
   font-size: 0.8rem;
-  color: #6c757d;
+  color: #062568;
   text-transform: uppercase;
-  background-color: #f8f9fa;
+  background-color: #e9ecef; /* Un gris un poco más notorio */
+  cursor: pointer; /* Indica que se puede hacer clic */
+  user-select: none; /* Evita que el texto se seleccione al hacer clic */
 }
 
 .data-table tbody tr:hover {
@@ -45,15 +64,32 @@
   transition: all 0.2s ease-in-out;
 }
 
+.btn-action2 {
+  background-color: var(--color-primary);
+  color: rgb(192, 192, 192);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
 .btn-action:hover {
   background-color: white;
   color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
+.btn-action2:hover {
+  background-color: white;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
 .btn-action.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
+  background-color: rgba(255, 255, 255, 0.1);;
+  border-color: #0c0256;
 }
 
 .btn-action.btn-danger:hover {
@@ -69,7 +105,7 @@
   gap: 0.5rem;
 }
 
-.pagination button {
+.pagination button, .pagination .page-number {
   background: none;
   border: 1px solid var(--color-border);
   color: var(--color-primary);
@@ -77,6 +113,11 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .pagination button:hover {
@@ -105,7 +146,7 @@
 .page-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: #ffffff;
   margin: 0;
 }
 
