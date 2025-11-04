@@ -1,0 +1,150 @@
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.data-table th {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  background-color: #f8f9fa;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-action {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-action:hover {
+  background-color: white;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-action.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-action.btn-danger:hover {
+  background-color: white;
+  color: #dc3545;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  gap: 0.5rem;
+}
+
+.pagination button {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination button:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary);
+}
+
+.pagination button.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Usamos los estilos de CrearCotizacion.css para el contenedor y header */
+.page-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Estilos para el Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinea arriba para poder hacer scroll */
+  z-index: 1000;
+  overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+  padding: 2rem;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #f8f9fa; /* Mismo fondo que el body */
+  padding: 0;
+  border-radius: 8px;
+  width: auto;
+  max-width: 210mm; /* Ancho de A4 */
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1010; /* Encima del contenido del modal */
+}

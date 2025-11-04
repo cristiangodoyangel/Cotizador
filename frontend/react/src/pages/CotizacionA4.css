@@ -1,0 +1,165 @@
+/* ================================================= */
+/* --- ESTILOS GENERALES DE PANTALLA --- */
+/* ================================================= */
+
+/* El contenedor exterior define el tamaño de la hoja A4 */
+.cotizacion-a4 {
+  background: white;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 1rem auto; /* Centra la "hoja" en la pantalla */
+  padding: 0; /* El padding va en el contenedor de adentro */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); /* Sombra para la "hoja" */
+  font-family: Arial, sans-serif;
+  color: #333;
+  position: relative;
+  
+  /* --- ¡ARREGLO CLAVE #1! --- */
+  box-sizing: border-box;
+}
+
+/* El contenedor interior define los márgenes */
+.cotizacion-content {
+  padding: 2.5rem; /* Margen para la VISTA EN PANTALLA */
+  
+  /* --- ¡ARREGLO CLAVE #2! --- */
+  box-sizing: border-box; /* El padding no aumenta el ancho */
+}
+
+/* --- (El resto de tus estilos de contenido, tablas, etc.) --- */
+
+.cotizacion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.cotizacion-logo-yasaja {
+  height: 60px;
+  width: auto;
+}
+
+.cotizacion-company-info {
+  text-align: left;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.cotizacion-cliente {
+  margin-bottom: 2rem;
+  border: 1px solid #eee;
+  padding: 1rem;
+  border-radius: 4px;
+  box-sizing: border-box; /* Buena práctica añadirlo aquí también */
+}
+
+.cotizacion-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.cotizacion-table th,
+.cotizacion-table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.cotizacion-table th {
+  background-color: #f0f0f0;
+}
+
+.cotizacion-summary-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.cotizacion-summary-table {
+  width: 50%;
+  max-width: 350px;
+  border-collapse: collapse;
+}
+
+.cotizacion-summary-table td {
+  padding: 0.5rem;
+  text-align: right;
+}
+
+.cotizacion-summary-table td:first-child {
+  font-weight: bold;
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.cotizacion-footer-text {
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.cotizacion-nota {
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* --- ESTILOS DE BOTONES (De tu React) --- */
+.cotizacion-actions.no-print {
+  padding: 1rem;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.action-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  margin: 0 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.action-button.secondary {
+  background-color: #6c757d;
+}
+
+/* ================================================= */
+/* --- SECCIÓN DE IMPRESIÓN (SIMPLE Y CORRECTA) --- */
+/* ================================================= */
+
+@page {
+  size: A4;
+  margin: 0; /* Sin márgenes del navegador */
+}
+
+@media print {
+  /* Oculta los botones */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  /* Quita la decoración de pantalla (margen y sombra) */
+  .cotizacion-a4 {
+    margin: 0;
+    box-shadow: none;
+    /* La 'width: 210mm' y 'min-height: 297mm' de los estilos
+       de pantalla se mantienen, lo cual es correcto. */
+  }
+
+  /* ¡AQUÍ ESTÁ TU MARGEN! */
+  /* Define el margen deseado SÓLO para la impresión */
+  .cotizacion-content {
+    padding: 3.5rem; /* O 4.5rem, o lo que quieras */
+  }
+  
+  /* Forzamos que el body no tenga márgenes de más */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}

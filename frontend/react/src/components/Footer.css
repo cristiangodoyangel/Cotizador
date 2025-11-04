@@ -1,0 +1,21 @@
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  width: 100%;
+  max-width: 1042px;
+  margin: 2rem auto 0;
+  padding: 1.5rem 2rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 760px) {
+  .app-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}
