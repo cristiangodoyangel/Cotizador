@@ -236,6 +236,7 @@ const ListadoCotizaciones = () => {
                       >
                         PDF
                       </button>
+
                       <button
                         onClick={() => handleEliminar(cot.id)}
                         className="btn-action2"

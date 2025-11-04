@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.db import transaction
 from django.db import models
 from django.utils import timezone
@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from .models import Cotizacion, ItemCotizacion, Empresa
 from .serializers import CotizacionSerializer, ItemCotizacionSerializer, EmpresaSerializer
 from .pdf_generator import generar_pdf_cotizacion
-import json
 
 
 class CotizacionListCreateView(generics.ListCreateAPIView):
@@ -93,7 +92,7 @@ def crear_cotizacion_completa(request):
             # Recalcular totales
             cotizacion.calcular_totales()
             cotizacion.save()
-            
+
             # Retornar la cotización completa
             cotizacion_completa = CotizacionSerializer(cotizacion)
             return Response(cotizacion_completa.data, status=status.HTTP_201_CREATED)
@@ -113,7 +112,7 @@ def generar_pdf(request, cotizacion_id):
     """Genera el PDF de una cotización"""
     try:
         cotizacion = get_object_or_404(Cotizacion, id=cotizacion_id)
-        pdf_response = generar_pdf_cotizacion(cotizacion)
+        pdf_response = generar_pdf_cotizacion(cotizacion) # Esta función ya devuelve un HttpResponse
         return pdf_response
     
     except Exception as e:
@@ -157,7 +156,7 @@ def cliente_list(request):
     """
     try:
         clientes = Cotizacion.objects.filter(activa=True).values(
-            'cliente_empresa', 'cliente_nombre', 'cliente_email', 'cliente_telefono', 'cliente_direccion'
+            'cliente_empresa', 'cliente_nombre', 'cliente_email', 'cliente_telefono', 'cliente_direccion',
         ).distinct()
         return Response(list(clientes))
     except Exception as e:
