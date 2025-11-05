@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import logo from "../assets/img/logo.png";
-// ELIMINADO: Ya no se importan 'topImage' ni 'botImage'
 import "./CotizacionA4.css";
 
-const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
+const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
+  const componentRef = useRef();
+
+  // --- CAMBIO AQUÍ ---
+  // Pasamos el ref directamente a la prop 'contentRef'
+  const handlePrint = useReactToPrint({
+    contentRef: componentRef, // <--- ¡ESTA ES LA CORRECCIÓN!
+    documentTitle: `Cotizacion-${cotizacion?.numero || "documento"}`,
+  });
+  // -----------------------------------------------------
+
   // Si no hay datos de cotización, no renderizamos nada.
   if (!cotizacion) {
     return (
-      <div className="cotizacion-a4">
+      <div className="cotizacion-a4" ref={componentRef}>
         <p>Cargando datos de la cotización...</p>
       </div>
     );
@@ -26,7 +36,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
   } = cotizacion;
 
   return (
-    <div className="cotizacion-a4">
+    <div className="cotizacion-a4" ref={componentRef}>
       <div className="cotizacion-content">
         {/* --- ENCABEZADO --- */}
         <div className="cotizacion-header">
@@ -113,7 +123,6 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
             ))}
           </tbody>
           {/* --- TOTALES MOVIDOS AL TFOOT DE LA TABLA PRINCIPAL --- */}
-          {/* --- TOTALES MOVIDOS AL TFOOT DE LA TABLA PRINCIPAL --- */}
           <tfoot>
             <tr>
               <td colSpan="3" className="summary-empty"></td>
@@ -156,6 +165,13 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
         <button onClick={onBack} className="action-button secondary">
           Cerrar
         </button>
+
+        {/* --- 4. AÑADIR EL BOTÓN DE IMPRIMIR --- */}
+        {showPrintButton && (
+          <button onClick={handlePrint} className="action-button">
+            Imprimir
+          </button>
+        )}
       </div>
     </div>
   );
