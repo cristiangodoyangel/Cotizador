@@ -4,94 +4,98 @@ import logo from "../assets/img/logo.png";
 import "./CotizacionA4.css";
 
 const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
-  if (!cotizacion) return null;
-  const { cliente, items } = cotizacion;
+  // Si no hay datos de cotización, no renderizamos nada.
+  if (!cotizacion) {
+    return (
+      <div className="cotizacion-a4">
+        <p>Cargando datos de la cotización...</p>
+      </div>
+    );
+  }
 
-  const [isAlreadyPrinted, setIsAlreadyPrinted] = React.useState(false);
-
-  // useEffect para manejar la restauración del título después de imprimir.
-  // Esto evita que se agreguen múltiples listeners si el componente se renderiza varias veces.
-  React.useEffect(() => {
-    const originalTitle = document.title;
-
-    const restoreTitle = () => {
-      document.title = originalTitle;
-    };
-
-    window.addEventListener("afterprint", restoreTitle);
-
-    // Función de limpieza: se ejecuta cuando el componente se desmonta.
-    return () => {
-      window.removeEventListener("afterprint", restoreTitle);
-      console.log("useEffect cleanup");
-    };
-  }, []); // El array vacío asegura que esto se ejecute solo una vez (al montar).
-
-  const handlePrint = () => {
-    // Cambiamos el título justo antes de imprimir.
-    if (isAlreadyPrinted) {
-      return;
-    }
-    // El useEffect se encargará de restaurarlo.
-    const cotizacionId = cotizacion.id || cotizacion.numero || "nuevo";
-    const newTitle = `cotizacion-${cotizacionId}`;
-    document.title = newTitle;
-
-    window.print();
-  };
+  const {
+    cliente,
+    items,
+    numero,
+    fecha,
+    subtotal,
+    iva,
+    total,
+    tiempo_entrega,
+    observaciones,
+  } = cotizacion;
 
   return (
     <div className="cotizacion-a4">
       <div className="cotizacion-content">
+        {/* --- ENCABEZADO --- */}
         <div className="cotizacion-header">
-          <img src={logo} alt="Logo" className="cotizacion-logo-yasaja" />
+          <img
+            src={logo}
+            alt="Logo Yajasa"
+            className="cotizacion-logo-yasaja"
+          />
           <div className="cotizacion-company-info">
-            <div>
-              <b>Fecha:</b> {new Date().toLocaleDateString()}
-            </div>
-            <div>
-              <b>Empresa:</b> Yajasa Technology
-            </div>
-            <div>
-              <b>RUT:</b> 77.182.974-0
-            </div>
-            <div>
-              <b>Dirección:</b> Uribe 636 Of 707, Centro Negocios, Antofagasta
-            </div>
-            <div>
-              <b>Teléfono:</b> +56-9-42920058
-            </div>
-            <div>
-              <b>Email:</b> yajasa.technology@gmail.com
-            </div>
+            <h2>Yajasa Technology</h2>
+            <p>RUT: 77.182.974-0</p>
+            <p>Uribe 636 Of 707, Centro Negocios, Antofagasta</p>
+            <p>Teléfono: +56-9-42920058</p>
+            <p>Email: yajasa.technology@gmail.com</p>
           </div>
         </div>
 
-        <h2>COTIZACIÓN N° {cotizacion.numero}</h2>
+        {/* --- TÍTULO Y FECHA --- */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <div>
+            <h2>COTIZACIÓN</h2>
+            <p>
+              <strong>N°:</strong> {numero}
+            </p>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <p>
+              <strong>Fecha:</strong>{" "}
+              {new Date(fecha).toLocaleDateString("es-CL")}
+            </p>
+          </div>
+        </div>
 
+        {/* --- DATOS DEL CLIENTE --- */}
         <div className="cotizacion-cliente">
-          <div>
-            <b>Señores:</b> {cliente.empresa}
-          </div>
-          <div>
-            <b>Atención:</b> {cliente.nombre}
-          </div>
-          <div>
-            <b>Email:</b> {cliente.email}
-          </div>
-          <div>
-            <b>Teléfono:</b> {cliente.telefono}
-          </div>
+          <p>
+            <strong>Señores:</strong> {cliente.empresa}
+          </p>
+          <p>
+            <strong>Atención:</strong> {cliente.nombre}
+          </p>
+          <p>
+            <strong>Email:</strong> {cliente.email}
+          </p>
+          <p>
+            <strong>Teléfono:</strong> {cliente.telefono}
+          </p>
         </div>
 
+        {/* --- TABLA DE ARTÍCULOS Y TOTALES (FUSIONADAS) --- */}
         <table className="cotizacion-table">
           <thead>
             <tr>
-              <th>Item</th>
-              <th>Cantidad</th>
+              <th style={{ width: "10%" }}>Item</th>
+              <th style={{ width: "10%" }}>Cantidad</th>
               <th>Detalle</th>
-              <th>Precio Unitario</th>
-              <th>Precio Total</th>
+              <th style={{ width: "20%" }} className="text-right">
+                P. Unitario
+              </th>
+              <th style={{ width: "20%" }} className="text-right">
+                Total
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -100,65 +104,66 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
                 <td>{index + 1}</td>
                 <td>{item.cantidad}</td>
                 <td>{item.caracteristica}</td>
-                <td>
-                  ${(parseFloat(item.valor_unitario) || 0).toLocaleString()}
+                <td className="text-right">
+                  $
+                  {(parseFloat(item.valor_unitario) || 0).toLocaleString(
+                    "es-CL"
+                  )}
                 </td>
-                <td>${(parseFloat(item.total) || 0).toLocaleString()}</td>
+                <td className="text-right">
+                  $
+                  {(item.cantidad * item.valor_unitario).toLocaleString(
+                    "es-CL"
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
+          {/* --- TOTALES MOVIDOS AL TFOOT DE LA TABLA PRINCIPAL --- */}
+          {/* --- TOTALES MOVIDOS AL TFOOT DE LA TABLA PRINCIPAL --- */}
+          <tfoot>
+            <tr>
+              <td colSpan="3" className="summary-empty"></td>
+              <td className="summary-label">Subtotal:</td>
+              <td className="summary-value">
+                ${(parseFloat(subtotal) || 0).toLocaleString("es-CL")}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="3" className="summary-empty"></td>
+              <td className="summary-label">IVA (19%):</td>
+              <td className="summary-value">
+                ${(parseFloat(iva) || 0).toLocaleString("es-CL")}
+              </td>
+            </tr>
+            <tr className="total-row-final">
+              <td colSpan="3" className="summary-empty"></td>
+              <td className="summary-label">TOTAL</td>
+              <td className="summary-value">
+                ${(parseFloat(total) || 0).toLocaleString("es-CL")}
+              </td>
+            </tr>
+          </tfoot>
         </table>
 
-        <div className="cotizacion-summary-wrapper">
-          <table className="cotizacion-summary-table">
-            <tbody>
-              <tr>
-                <td>Subtotal:</td>
-                <td>
-                  ${(parseFloat(cotizacion.subtotal) || 0).toLocaleString()}
-                </td>
-              </tr>
-              <tr>
-                <td>IVA (19%):</td>
-                <td>${(parseFloat(cotizacion.iva) || 0).toLocaleString()}</td>
-              </tr>
-              <tr className="summary-total-row">
-                <td>
-                  <strong>Total:</strong>
-                </td>
-                <td>
-                  <strong>
-                    ${(parseFloat(cotizacion.total) || 0).toLocaleString()}
-                  </strong>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        {/* --- TOTALES (DIV ANTIGUO ELIMINADO) --- */}
+        {/* Ya no necesitas el <div className="cotizacion-summary-wrapper">...</div> */}
 
+        {/* --- PIE DE PÁGINA --- */}
         <div className="cotizacion-footer-text">
-          <p>Tiempo de Entrega de Servicio: {cotizacion.tiempo_entrega}</p>
-          <p>
-            <b>Yajasa Technology</b>
-            <br />
-            77.182.974-0
-          </p>
-          <p className="cotizacion-nota">{cotizacion.observaciones}</p>
+          <p>Tiempo de Entrega: {tiempo_entrega}</p>
+          {observaciones && (
+            <p className="cotizacion-nota">Observaciones: {observaciones}</p>
+          )}
         </div>
       </div>
 
-      <div className="cotizacion-actions no-print">
-        {showPrintButton && (
-          <button onClick={handlePrint} className="action-button">
-            Guardar PDF
-          </button>
-        )}
+      {/* --- BOTONES DE ACCIÓN (SIN IMPRIMIR) --- */}
+      <div className="cotizacion-actions">
         <button onClick={onBack} className="action-button secondary">
-          {showPrintButton ? "Cerrar" : "Crear Otra Cotización"}
+          Cerrar
         </button>
       </div>
-
-      {/* ELIMINADO: <img src={botImage} ... /> */}
     </div>
   );
 };

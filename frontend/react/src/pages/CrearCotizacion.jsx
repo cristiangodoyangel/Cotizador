@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // 1. Importar useNavigate
 import { crearCotizacionCompleta, getClientes } from "../api"; // Importamos getClientes
-import CotizacionA4 from "./CotizacionA4"; // Importamos el componente A4
 import "./CrearCotizacion.css";
 
 const CrearCotizacion = ({ onCotizacionCreada }) => {

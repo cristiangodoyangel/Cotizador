@@ -1,184 +1,216 @@
-/* ================================================= */
-/* --- ESTILOS GENERALES DE PANTALLA --- */
-/* ================================================= */
+/*
+  Hoja de Estilos para CotizacionA4.jsx
+  - Estilos para la vista en pantalla (simulando una hoja A4).
+  - Estilos para el contenido de la cotización.
+  - Estilos específicos para la impresión.
+*/
 
-/* El contenedor exterior define el tamaño de la hoja A4 */
+/* ============================================= */
+/* == 1. ESTILOS PARA LA VISTA EN PANTALLA == */
+/* ============================================= */
+
+/* Contenedor principal que simula la hoja A4 en pantalla. */
 .cotizacion-a4 {
   background: white;
   width: 210mm;
   min-height: 297mm;
-  margin: 1rem auto; /* Centra la "hoja" en la pantalla */
-  padding: 0; /* El padding va en el contenedor de adentro */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); /* Sombra para la "hoja" */
+  margin: 0 auto;
+  /* Eliminamos el margen vertical para la impresión */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  /* Sombra para efecto de papel */
   font-family: Arial, sans-serif;
   color: #333;
-  position: relative;
-  
-  /* --- ¡ARREGLO CLAVE #1! --- */
+  font-size: 12px;
+  /* Tamaño de fuente base para A4 */
+  box-sizing: border-box;
+  /* Asegura que padding/border no afecten el tamaño */
+}
+
+/* Contenedor interno que define los márgenes del documento. */
+.cotizacion-content {
+  padding: 20mm;
+  /* Márgenes estándar de un documento */
   box-sizing: border-box;
 }
 
-/* El contenedor interior define los márgenes */
-.cotizacion-content {
-  padding: 2.5rem; /* Margen para la VISTA EN PANTALLA */
-  
-  /* --- ¡ARREGLO CLAVE #2! --- */
-  box-sizing: border-box; /* El padding no aumenta el ancho */
-}
-
-/* --- (El resto de tus estilos de contenido, tablas, etc.) --- */
-
-.cotizacion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-}
-
-.cotizacion-logo-yasaja {
-  height: 60px;
-  width: auto;
-}
-
-.cotizacion-company-info {
-  text-align: left;
-  font-size: 0.8rem;
-  color: #333;
-}
-
-.cotizacion-cliente {
-  margin-bottom: 2rem;
-  border: 1px solid #eee;
-  padding: 1rem;
-  border-radius: 4px;
-  box-sizing: border-box; /* Buena práctica añadirlo aquí también */
-}
-
-.cotizacion-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 2rem;
-}
-
-.cotizacion-table th,
-.cotizacion-table td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: left;
-}
-
-.cotizacion-table th {
-  background-color: #f0f0f0;
-}
-
-.cotizacion-summary-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.cotizacion-summary-table {
-  width: 50%;
-  max-width: 350px;
-  border-collapse: collapse;
-}
-
-.cotizacion-summary-table td {
-  padding: 0.5rem;
+/* Contenedor para los botones de acción (Imprimir, Cerrar). */
+.cotizacion-actions {
+  padding: 1rem 20mm;
+  /* Alinear con los márgenes del contenido */
   text-align: right;
-}
-
-.cotizacion-summary-table td:first-child {
-  font-weight: bold;
-  text-align: right;
-  padding-right: 1rem;
-}
-
-.cotizacion-footer-text {
-  font-size: 0.8rem;
-  margin-top: 2rem;
-  text-align: center;
-}
-
-.cotizacion-nota {
-  margin-top: 1rem;
-  font-style: italic;
-}
-
-/* --- ESTILOS DE BOTONES (De tu React) --- */
-.cotizacion-actions.no-print {
-  padding: 1rem;
-  text-align: center;
-  background-color: #f9f9f9;
+  background-color: #f0f2f5;
+  border-top: 1px solid #dee2e6;
 }
 
 .action-button {
   background-color: var(--color-primary);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  margin: 0 0.5rem;
+  padding: 0.6rem 1.2rem;
+  margin-left: 0.5rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.action-button:hover {
+  opacity: 0.85;
 }
 
 .action-button.secondary {
   background-color: #6c757d;
+  /* Gris para acciones secundarias */
 }
 
-/* ================================================= */
-/* --- SECCIÓN DE IMPRESIÓN (SIMPLE Y CORRECTA) --- */
-/* ================================================= */
+/* ============================================= */
+/* == 2. ESTILOS DEL CONTENIDO DE LA COTIZACIÓN == */
+/* ============================================= */
 
-/* ================================================= */
-/* --- SECCIÓN DE IMPRESIÓN (CORREGIDA Y COMPLETA) --- */
-/* ================================================= */
-/* ================================================= */
-/* --- SECCIÓN DE IMPRESIÓN (CORREGIDA Y COMPLETA) --- */
-/* ================================================= */
-
-@page {
-  size: A4;
-  margin: 0; /* Sin márgenes del navegador */
+/* Encabezado con logo e información de la empresa */
+.cotizacion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 1.5rem;
+  margin-top: 50px;
 }
 
-@media print {
+.cotizacion-logo-yasaja {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+
+.cotizacion-company-info {
+  text-align: right;
+  font-size: 0.85em;
+  /* Relativo al font-size base */
+}
+
+.cotizacion-company-info h2 {
+  margin: 0 0 5px 0;
+  font-size: 1.4em;
+  color: #000;
+}
+
+.cotizacion-company-info p {
+  margin: 3px 0;
+}
+
+.cotizacion-cliente {
+  margin-bottom: 1.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  background-color: #dbe7f4;
+  font-size: 0.9em;
+  border: 0.5px solid #061c32;
+}
+
+.cotizacion-cliente p {
+  margin: 4px 0;
+}
+/* Tabla de artículos */
+.cotizacion-table {
+  width: 100%;
+  border-collapse: collapse; /* Mantenemos colapso de bordes */
+  font-size: 0.9em;
+}
+
+.cotizacion-table th,
+.cotizacion-table td { /* Esto se aplica a th, tbody td, y tfoot td */
+  border: 1px solid #061c32;
+  padding: 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.cotizacion-table th {
+  background-color: #dbe7f4;
+  font-weight: 600;
+}
+
+.cotizacion-table .text-right {
+  text-align: right;
+}
+
+/* --- SECCIÓN DE TOTALES (TFOOT) --- */
+
+/* Celdas del pie de tabla */
+.cotizacion-table tfoot td {
+  /* Hereda padding, etc. de .cotizacion-table td */
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   
-  /* 1. Oculta TODO el contenido del body por defecto */
-  body * {
-    visibility: hidden;
-  }
+}
 
-  /* 2. Muestra SOLAMENTE el contenedor de contenido y sus hijos */
-  /* ¡Esta es la regla más importante que faltaba! */
-  .cotizacion-content, .cotizacion-content * {
-    visibility: visible;
-  }
+/* Celda vacía (Col 1-3) */
+.cotizacion-table tfoot .summary-empty {
+  border: none; /* Quitamos bordes de las celdas vacías */
+  /* Dejamos un borde derecho para separar las columnas si lo deseas */
+  /* border-right: 1px solid #061c32; */ 
+}
 
-  /* 3. Coloca el contenido al inicio de la página de impresión */
-  /* y le da los márgenes (padding) deseados. */
-  .cotizacion-content {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    padding: 3.5rem; /* Tu margen de impresión deseado */
-    box-sizing: border-box; /* Para que el padding no desborde */
-  }
+/* Celda de la ETIQUETA (Col 4) */
+.cotizacion-table tfoot .summary-label {
+  text-align: right;
+  font-weight: normal;
+  border: 0;
+  /* Hereda su borde de .cotizacion-table td */
+}
 
-  /* 4. Oculta explícitamente cualquier cosa con .no-print */
-  /* (Esto es un seguro extra, aunque ya estaría oculto por el paso 1) */
-  .no-print, .no-print * {
-    display: none !important;
-  }
+/* Celda del VALOR (Col 5) */
+.cotizacion-table tfoot .summary-value {
+  text-align: right;
+  /* Hereda su borde de .cotizacion-table td */
+  border: 0;
+}
 
-  /* 5. Resetea el body (por si acaso) */
-  body {
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* NOTA: No necesitamos resetear .cotizacion-a4 (con su sombra y margen) 
-     porque ya está oculto gracias a 'body * { visibility: hidden; }' */
+
+.cotizacion-table tfoot tr.total-row-final .summary-label {
+  border: 0;
+  font-weight: bold;
+  font-size: 1.05em;
+  border-top: 1.5px solid #333; /* Borde superior grueso */
+  padding-top: 0.75rem;
+}
+.cotizacion-table tfoot tr.total-row-final .summary-value {
+  border: 0;
+  font-weight: bold;
+  font-size: 1.05em;
+  border-top: 1.5px solid #333; /* Borde superior grueso */
+  padding-top: 0.75rem;
+}
+
+/* --- FIN DE SECCIÓN TFOOT --- */
+
+/* ELIMINA TODAS LAS REGLAS ANTIGUAS para:
+  .cotizacion-summary-wrapper, 
+  .cotizacion-summary-table, 
+  .total-row2, 
+  #total 
+*/
+.total-row-final{
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Notas y pie de página */
+.cotizacion-nota {
+  margin-top: 1.5rem;
+  font-style: italic;
+  font-size: 1em;
+  color: #555;
+}
+
+.cotizacion-footer-text {
+  font-size: 1em;
+  margin-top: 2rem;
+  text-align: center;
+  border-top: 1px solid #dee2e6;
+  padding-top: 1rem;
+  color: #777;
 }

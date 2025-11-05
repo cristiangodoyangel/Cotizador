@@ -189,3 +189,53 @@
   cursor: pointer;
   z-index: 1010; /* Encima del contenido del modal */
 }
+
+/* ============================================= */
+/* == ESTILOS DE IMPRESIÓN PARA EL MODAL == */
+/* ============================================= */
+
+@media print {
+  /* Elimina los márgenes, encabezados y pies de página del navegador */
+  @page {
+    margin: 0;
+  }
+
+  /* 1. Oculta todo el contenido de la página por defecto */
+  body * {
+    visibility: hidden;
+  }
+
+  /* 2. Hace visible SOLAMENTE el contenido del modal y sus hijos */
+  .modal-content,
+  .modal-content * {
+    visibility: visible;
+  }
+
+  /* 3. Resetea el overlay y el contenido del modal para la impresión */
+  .modal-overlay {
+    position: static;
+    background-color: white;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .modal-content {
+    /* Se elimina 'position: absolute' para que fluya naturalmente */
+    position: static;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+  }
+
+  /* 4. Oculta los botones que no deben salir en el PDF */
+  .cotizacion-actions {
+    display: none !important;
+  }
+
+  /* Oculta el botón de cerrar del modal para que no ocupe espacio */
+  .modal-close-btn {
+    display: none !important;
+  }
+}
