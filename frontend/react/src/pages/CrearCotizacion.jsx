@@ -281,7 +281,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                 <input
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="0.01" // Puedes cambiar esto a 1 si no usas decimales
                   value={item.precioUnitario}
                   onChange={(e) =>
                     handleItemChange(
@@ -293,7 +293,9 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                 />
                 <input
                   type="text"
-                  value={formatCurrency(item.cantidad * item.precioUnitario)}
+                  value={(
+                    Number(item.cantidad * item.precioUnitario) || 0
+                  ).toLocaleString("es-CL")}
                   readOnly
                 />
                 {/* Solo mostrar el botón de eliminar si hay más de un item */}
@@ -333,19 +335,21 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           <div className="card totals-card">
             <div className="total-row">
               <span>Subtotal</span>
-              <span>{formatCurrency(subtotal)}</span>
+              {/* CORREGIDO */}
+              <span>${(Number(subtotal) || 0).toLocaleString("es-CL")}</span>
             </div>
             <div className="total-row">
               <span>Impuestos (IVA 19%)</span>
-              <span>{formatCurrency(impuestos)}</span>
+              {/* CORREGIDO */}
+              <span>${(Number(impuestos) || 0).toLocaleString("es-CL")}</span>
             </div>
             <div className="total-row total">
               <strong>Total</strong>
-              <strong>{formatCurrency(total)}</strong>
+              {/* CORREGIDO */}
+              <strong>${(Number(total) || 0).toLocaleString("es-CL")}</strong>
             </div>
           </div>
         </div>
-
         {/* Acciones */}
         <div className="form-actions">
           <button type="submit" className="btn-primary">
