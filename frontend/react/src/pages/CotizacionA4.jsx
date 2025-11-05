@@ -151,7 +151,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
         </div>
       </div>
 
-      {/* --- BOTONES DE ACCIÓN (SIN IMPRIMIR) --- */}
+      {/* --- BOTONES DE ACCIÓN (NO SE IMPRIMEN GRACIAS A @media print) --- */}
       <div className="cotizacion-actions">
         <button onClick={onBack} className="action-button secondary">
           Cerrar

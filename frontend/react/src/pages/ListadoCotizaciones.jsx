@@ -301,7 +301,6 @@ const ListadoCotizaciones = () => {
                 <CotizacionA4
                   cotizacion={selectedCotizacion}
                   onBack={closeModal}
-                  showPrintButton={true}
                 />
               )
             )}

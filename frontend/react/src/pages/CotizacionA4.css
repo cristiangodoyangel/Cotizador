@@ -188,37 +188,6 @@
   /* border-right: 1px solid #061c32; */ 
 }
 
-/* Celda de la ETIQUETA (Col 4) */
-.cotizacion-table tfoot .summary-label {
-  text-align: right;
-  font-weight: normal;
-  border: 0;
-  /* Hereda su borde de .cotizacion-table td */
-}
-
-/* Celda del VALOR (Col 5) */
-.cotizacion-table tfoot .summary-value {
-  text-align: right;
-  /* Hereda su borde de .cotizacion-table td */
-  border: 0;
-}
-
-
-.cotizacion-table tfoot tr.total-row-final .summary-label {
-  border: 0;
-  font-weight: bold;
-  font-size: 1.05em;
-  border-top: 1.5px solid #333; /* Borde superior grueso */
-  padding-top: 0.75rem;
-}
-.cotizacion-table tfoot tr.total-row-final .summary-value {
-  border: 0;
-  font-weight: bold;
-  font-size: 1.05em;
-  border-top: 1.5px solid #333; /* Borde superior grueso */
-  padding-top: 0.75rem;
-}
-
 /* --- FIN DE SECCIÓN TFOOT --- */
 
 /* ELIMINA TODAS LAS REGLAS ANTIGUAS para:
