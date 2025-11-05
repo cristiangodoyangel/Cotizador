@@ -45,24 +45,17 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = false }) => {
         </div>
 
         {/* --- TÍTULO Y FECHA --- */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: "1.5rem",
-          }}
-        >
-          <div>
-            <h2>COTIZACIÓN</h2>
-            <p>
-              <strong>N°:</strong> {numero}
-            </p>
-          </div>
+        <div>
           <div style={{ textAlign: "right" }}>
-            <p>
+            <p className="cotizacion-date">
               <strong>Fecha:</strong>{" "}
               {new Date(fecha).toLocaleDateString("es-CL")}
+            </p>
+          </div>
+          <div className="titulos">
+            <h2 className="titulo">COTIZACIÓN</h2>
+            <p className="cotizacion-number">
+              <strong>N°:</strong> {numero}
             </p>
           </div>
         </div>
