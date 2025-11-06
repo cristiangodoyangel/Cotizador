@@ -190,52 +190,106 @@
   z-index: 1010; /* Encima del contenido del modal */
 }
 
-/* ============================================= */
-/* == ESTILOS DE IMPRESIÓN PARA EL MODAL == */
-/* ============================================= */
+/* ======================================================== */
+/* == SOLUCIÓN QUIRÚRGICA (display: none) == */
+/* ======================================================== */
 
 @media print {
-  /* Elimina los márgenes, encabezados y pies de página del navegador */
   @page {
     margin: 0;
+    size: A4;
   }
 
-  /* 1. Oculta todo el contenido de la página por defecto */
-  body * {
-    visibility: hidden;
+  /* 1. Resetea el body */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* 2. Oculta TODOS los hijos del .page-container
+     (Tu .page-header, .controls-container, .card)
+  */
+  body.modal-is-open-for-print .page-container > * {
+    display: none !important;
+  }
+  
+  /* --- INICIO DE LA NUEVA REGLA --- */
+  /* 2b. Oculta el menú lateral (sidebar) y otros elementos comunes */
+  body.modal-is-open-for-print nav,
+  body.modal-is-open-for-print aside,
+  body.modal-is-open-for-print header {
+    display: none !important;
+  }
+  /* --- FIN DE LA NUEVA REGLA --- */
+
+  /* 3. EXCEPCIÓN: Muestra SÓLO el overlay del modal
+     y lo resetea para que ocupe todo
+  */
+  body.modal-is-open-for-print .page-container > .modal-overlay {
+    display: block !important;
+    position: static !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    background: none !important;
   }
 
-  /* 2. Hace visible SOLAMENTE el contenido del modal y sus hijos */
-  .modal-content,
-  .modal-content * {
-    visibility: visible;
+  /* 4. Resetea el modal-content (que está dentro del overlay) */
+  body.modal-is-open-for-print .modal-content {
+    position: static !important;
+    display: block !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* 3. Resetea el overlay y el contenido del modal para la impresión */
-  .modal-overlay {
-    position: static;
-    background-color: white;
-    padding: 0;
-    overflow: hidden;
+  /* 5. Anula la altura de la hoja A4 (el problema de la página extra) */
+  body.modal-is-open-for-print .cotizacion-a4 {
+    min-height: auto !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    border: none !important;
   }
-
-  .modal-content {
-    /* Se elimina 'position: absolute' para que fluya naturalmente */
-    position: static;
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
-    border-radius: 0;
-    width: 100%;
-  }
-
-  /* 4. Oculta los botones que no deben salir en el PDF */
-  .cotizacion-actions {
+  
+  /* 6. Oculta los botones (que están dentro del .modal-content) */
+  body.modal-is-open-for-print .modal-close-btn,
+  body.modal-is-open-for-print .cotizacion-actions {
     display: none !important;
   }
 
-  /* Oculta el botón de cerrar del modal para que no ocupe espacio */
-  .modal-close-btn {
-    display: none !important;
+  /* --- INICIO DE NUEVAS REGLAS DE COMPRESIÓN --- */
+
+  /* 7. Reduce el padding (márgenes internos) de la página */
+  body.modal-is-open-for-print .cotizacion-content {
+    /* Reducimos de 20mm. Prueba con 15mm o 10mm si es necesario */
+    padding: 15mm !important;
   }
+
+  /* 8. ELIMINA el margen superior excesivo del header (el de 50px) */
+  body.modal-is-open-for-print .cotizacion-header {
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important; /* Reducido de 1.5rem */
+    padding-bottom: 1rem !important; /* Reducido de 1.5rem */
+  }
+
+  /* 9. Reduce los espacios entre los bloques */
+  body.modal-is-open-for-print .cotizacion-cliente {
+    margin-bottom: 1rem !important; /* Reducido de 1.5rem */
+  }
+
+  body.modal-is-open-for-print .cotizacion-footer-text {
+    margin-top: 1.5rem !important; /* Reducido de 2rem */
+  }
+
+  /* 10. (Opcional) Si sigue sin caber, reduce un poco la letra */
+  /*
+  body.modal-is-open-for-print .cotizacion-a4 {
+    font-size: 11px !important;
+  }
+  */
+
+  /* --- FIN DE NUEVAS REGLAS --- */
 }

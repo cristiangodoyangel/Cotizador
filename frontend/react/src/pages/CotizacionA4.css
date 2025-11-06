@@ -2,14 +2,12 @@
   Hoja de Estilos para CotizacionA4.jsx
   - Estilos para la vista en pantalla (simulando una hoja A4).
   - Estilos para el contenido de la cotización.
-  - Estilos específicos para la impresión.
+  - SIN ESTILOS DE IMPRESIÓN (se manejan en Listado.css)
 */
 
 /* ============================================= */
 /* == 1. ESTILOS PARA LA VISTA EN PANTALLA == */
 /* ============================================= */
-
-/* Contenedor principal que simula la hoja A4 en pantalla. */
 
 .titulos {
   display: flex;
@@ -30,7 +28,6 @@
 .cotizacion-number {
   text-align: center;
   font-size: 1.3em;
-
   font-weight: 500;
 }
 
@@ -40,40 +37,38 @@
   font-weight: 500;
 }
 
+/* Esta regla es para la VISTA EN PANTALLA.
+  El min-height es lo que causa la página extra si no se
+  sobrescribe correctamente en la impresión.
+*/
 .cotizacion-a4 {
   background: white;
   width: 210mm;
-  min-height: 297mm;
+  min-height: 297mm; /* <-- CULPABLE EN PANTALLA */
   margin: 0 auto;
-  /* Eliminamos el margen vertical para la impresión */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  /* Sombra para efecto de papel */
   font-family: Arial, sans-serif;
   color: #333;
   font-size: 12px;
-  /* Tamaño de fuente base para A4 */
   box-sizing: border-box;
-  /* Asegura que padding/border no afecten el tamaño */
 }
 
 /* Contenedor interno que define los márgenes del documento. */
 .cotizacion-content {
   padding: 20mm;
-  /* Márgenes estándar de un documento */
   box-sizing: border-box;
 }
 
 /* Contenedor para los botones de acción (Imprimir, Cerrar). */
 .cotizacion-actions {
   padding: 1rem 20mm;
-  /* Alinear con los márgenes del contenido */
   text-align: right;
   background-color: #f0f2f5;
   border-top: 1px solid #dee2e6;
 }
 
 .action-button {
-  background-color: var(--color-primary, #007bff); /* Color de fallback */
+  background-color: var(--color-primary, #007bff);
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -91,14 +86,12 @@
 
 .action-button.secondary {
   background-color: #6c757d;
-  /* Gris para acciones secundarias */
 }
 
 /* ============================================= */
 /* == 2. ESTILOS DEL CONTENIDO DE LA COTIZACIÓN == */
 /* ============================================= */
 
-/* Encabezado con logo e información de la empresa */
 .cotizacion-header {
   display: flex;
   justify-content: space-between;
@@ -118,7 +111,6 @@
 .cotizacion-company-info {
   text-align: right;
   font-size: 0.85em;
-  /* Relativo al font-size base */
 }
 
 .cotizacion-company-info h2 {
@@ -144,17 +136,14 @@
   margin: 4px 0;
 }
 
-/* Tabla de artículos */
 .cotizacion-table {
   width: 100%;
   border-collapse: collapse;
-  /* Mantenemos colapso de bordes */
   font-size: 0.9em;
 }
 
 .cotizacion-table th,
 .cotizacion-table td {
-  /* Esto se aplica a th, tbody td, y tfoot td */
   border: 1px solid #061c32;
   padding: 0.6rem;
   text-align: left;
@@ -164,44 +153,29 @@
 .cotizacion-table th {
   background-color: #dbe7f4;
   font-weight: 600;
+  -webkit-print-color-adjust: exact !important; /* Forzamos color al imprimir */
+  print-color-adjust: exact !important;
 }
 
 .cotizacion-table .text-right {
   text-align: right;
 }
 
-/* --- SECCIÓN DE TOTALES (TFOOT) --- */
-
-/* Celdas del pie de tabla */
 .cotizacion-table tfoot td {
-  /* Hereda padding, etc. de .cotizacion-table td */
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
 
-/* Celda vacía (Col 1-3) */
 .cotizacion-table tfoot .summary-empty {
   border: none;
   text-align: right;
-  /* Quitamos bordes de las celdas vacías */
-  /* Dejamos un borde derecho para separar las columnas si lo deseas */
-  /* border-right: 1px solid #061c32; */
 }
 
-/* --- FIN DE SECCIÓN TFOOT --- */
-
-/* ELIMINA TODAS LAS REGLAS ANTIGUAS para:
-  .cotizacion-summary-wrapper,
-  .cotizacion-summary-table,
-  .total-row2,
-  #total
-*/
 .total-row-final {
   font-weight: bold;
   font-size: 1.2em;
 }
 
-/* Notas y pie de página */
 .cotizacion-nota {
   margin-top: 1.5rem;
   font-style: italic;
@@ -218,39 +192,7 @@
   color: #777;
 }
 
-/* ================================================= */
-/* == 3. ESTILOS DE IMPRESIÓN (PARA REACT-TO-PRINT) == */
-/* ================================================= */
-
-@media print {
-
-  /* Oculta los botones de acción al imprimir */
-  .cotizacion-actions {
-    display: none !important;
-  }
-
-  /* Resetea el contenedor A4 para que ocupe la hoja */
-  .cotizacion-a4 {
-    min-height: auto;
-    width: 100%;
-    margin: 0;
-    box-shadow: none;
-    border: none;
-  }
-
-  /* Opcional: Asegura que el contenido use todo el ancho */
-  .cotizacion-content {
-    padding: 10mm;
-    /* Reduce márgenes para la impresión si es necesario */
-  }
-
-  /* Evita que el navegador ponga su propia URL o título */
-  @page {
-    size: A4;
-    margin: 0;
-  }
-
-  body {
-    margin: 0;
-  }
-}
+/*
+  EL BLOQUE @media print FUE ELIMINADO DE AQUÍ 
+  PARA EVITAR CONFLICTOS.
+*/

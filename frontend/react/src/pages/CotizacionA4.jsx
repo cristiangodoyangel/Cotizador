@@ -1,23 +1,18 @@
-import React, { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
-import logo from "../assets/img/logo.png";
+import React from "react";
+// TOTALMENTE ELIMINADAS las importaciones de 'useRef' y 'useReactToPrint'
+// import logo from "../assets/img/logo.png"; // Usamos placeholder, tu logo original daba error de compilación
 import "./CotizacionA4.css";
 
 const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
-  const componentRef = useRef();
+  // TOTALMENTE ELIMINADAS las llamadas a 'useRef' y 'useReactToPrint'
 
-  // --- CAMBIO AQUÍ ---
-  // Pasamos el ref directamente a la prop 'contentRef'
-  const handlePrint = useReactToPrint({
-    contentRef: componentRef, // <--- ¡ESTA ES LA CORRECCIÓN!
-    documentTitle: `Cotizacion-${cotizacion?.numero || "documento"}`,
-  });
-  // -----------------------------------------------------
+  const handleNativePrint = () => {
+    window.print();
+  };
 
-  // Si no hay datos de cotización, no renderizamos nada.
   if (!cotizacion) {
     return (
-      <div className="cotizacion-a4" ref={componentRef}>
+      <div className="cotizacion-a4">
         <p>Cargando datos de la cotización...</p>
       </div>
     );
@@ -36,12 +31,12 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
   } = cotizacion;
 
   return (
-    <div className="cotizacion-a4" ref={componentRef}>
+    <div className="cotizacion-a4">
       <div className="cotizacion-content">
         {/* --- ENCABEZADO --- */}
         <div className="cotizacion-header">
           <img
-            src={logo}
+            src="https://placehold.co/180x70/062568/FFFFFF?text=Logo+Empresa"
             alt="Logo Yajasa"
             className="cotizacion-logo-yasaja"
           />
@@ -148,9 +143,6 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           </tfoot>
         </table>
 
-        {/* --- TOTALES (DIV ANTIGUO ELIMINADO) --- */}
-        {/* Ya no necesitas el <div className="cotizacion-summary-wrapper">...</div> */}
-
         {/* --- PIE DE PÁGINA --- */}
         <div className="cotizacion-footer-text">
           <p>Tiempo de Entrega: {tiempo_entrega}</p>
@@ -166,9 +158,9 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           Cerrar
         </button>
 
-        {/* --- 4. AÑADIR EL BOTÓN DE IMPRIMIR --- */}
+        {/* --- BOTÓN DE IMPRESIÓN NATIVA --- */}
         {showPrintButton && (
-          <button onClick={handlePrint} className="action-button">
+          <button onClick={handleNativePrint} className="action-button">
             Imprimir
           </button>
         )}

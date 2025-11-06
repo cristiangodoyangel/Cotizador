@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // 1. Importar hooks
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   listarCotizaciones,
   eliminarCotizacion,
   obtenerCotizacion,
 } from "../api";
 import "./Listado.css";
-import CotizacionA4 from "./CotizacionA4"; // Importamos el componente A4
+import CotizacionA4 from "./CotizacionA4";
 
 const ListadoCotizaciones = () => {
-  const location = useLocation(); // 2. Obtener la ubicación para acceder al estado
-  const navigate = useNavigate(); // Para limpiar el estado después de usarlo
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [cotizaciones, setCotizaciones] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,8 @@ const ListadoCotizaciones = () => {
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
 
-  // Estados para búsqueda, ordenamiento y paginación
+  // --- ¡¡AQUÍ ESTABA EL ERROR!! ---
+  // Estas líneas las borré por accidente. Ahora están de vuelta.
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "numero",
@@ -29,6 +30,7 @@ const ListadoCotizaciones = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  // --- FIN DEL ERROR ---
 
   useEffect(() => {
     const fetchCotizaciones = async () => {
@@ -41,18 +43,27 @@ const ListadoCotizaciones = () => {
         setLoading(false);
       }
     };
-
     fetchCotizaciones();
-
-    // 3. Comprobar si se pasó un ID de nueva cotización
     const newCotizacionId = location.state?.newCotizacionId;
     if (newCotizacionId) {
       handleVerPdf(newCotizacionId);
-
-      // 4. Limpiar el estado de la ubicación para que el modal no se abra de nuevo si se recarga la página
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location, navigate]); // Añadir dependencias al useEffect
+  }, [location, navigate]);
+
+  // --- CÓDIGO DE SOLUCIÓN DE IMPRESIÓN ---
+  // Este efecto agrega/quita una clase del <body>
+  useEffect(() => {
+    if (modalVisible) {
+      document.body.classList.add("modal-is-open-for-print");
+    } else {
+      document.body.classList.remove("modal-is-open-for-print");
+    }
+    return () => {
+      document.body.classList.remove("modal-is-open-for-print");
+    };
+  }, [modalVisible]);
+  // --- FIN DEL CÓDIGO DE SOLUCIÓN ---
 
   const formatCurrency = (value) => {
     return parseFloat(value).toLocaleString("es-CL", {
@@ -61,11 +72,11 @@ const ListadoCotizaciones = () => {
     });
   };
 
-  // Hook useMemo para procesar los datos (filtrar y ordenar) de forma eficiente
+  // Hook useMemo para procesar los datos (filtrar y ordenar)
   const processedItems = useMemo(() => {
     let filteredItems = [...cotizaciones];
 
-    // Filtrado por término de búsqueda
+    // Filtrado (Ahora 'searchTerm' existe)
     if (searchTerm) {
       filteredItems = filteredItems.filter(
         (item) =>
@@ -83,7 +94,7 @@ const ListadoCotizaciones = () => {
       );
     }
 
-    // Ordenamiento
+    // Ordenamiento (Ahora 'sortConfig' existe)
     if (sortConfig.key) {
       filteredItems.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -99,7 +110,7 @@ const ListadoCotizaciones = () => {
     return filteredItems;
   }, [cotizaciones, searchTerm, sortConfig]);
 
-  // Efecto para resetear la paginación a la página 1 cuando se busca o se ordena
+  // Efecto para resetear la paginación
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, sortConfig]);
@@ -134,7 +145,6 @@ const ListadoCotizaciones = () => {
     ) {
       try {
         await eliminarCotizacion(cotizacionId);
-        // Actualizar el estado para remover la cotización de la lista
         setCotizaciones(cotizaciones.filter((cot) => cot.id !== cotizacionId));
       } catch (err) {
         alert("Error al eliminar la cotización: " + err.message);
@@ -146,11 +156,8 @@ const ListadoCotizaciones = () => {
     setModalVisible(true);
     setLoadingModal(true);
     setSelectedCotizacion(null);
-
     try {
       const cotizacionData = await obtenerCotizacion(cotizacionId);
-
-      // Transformamos la respuesta para que coincida con la estructura que espera CotizacionA4
       const cotizacionParaVista = {
         ...cotizacionData,
         cliente: {
@@ -160,7 +167,6 @@ const ListadoCotizaciones = () => {
           telefono: cotizacionData.cliente_telefono,
         },
       };
-
       setSelectedCotizacion(cotizacionParaVista);
     } catch (err) {
       alert("Error al cargar la cotización: " + err.message);
@@ -180,7 +186,6 @@ const ListadoCotizaciones = () => {
       <div className="page-header">
         <h1>Listado de Cotizaciones</h1>
       </div>
-
       <div className="controls-container">
         <input
           type="text"
@@ -190,7 +195,6 @@ const ListadoCotizaciones = () => {
           className="search-input"
         />
       </div>
-
       <div className="card">
         <div className="table-responsive">
           <table className="data-table">
@@ -236,7 +240,6 @@ const ListadoCotizaciones = () => {
                       >
                         PDF
                       </button>
-
                       <button
                         onClick={() => handleEliminar(cot.id)}
                         className="btn-action2"
@@ -256,7 +259,6 @@ const ListadoCotizaciones = () => {
             </tbody>
           </table>
         </div>
-
         {totalPages > 1 && (
           <div className="pagination">
             <button
