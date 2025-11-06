@@ -179,7 +179,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                 type="text"
                 value={clienteEmpresa}
                 onChange={(e) => setClienteEmpresa(e.target.value)}
-                placeholder="Ej. Acme Inc."
+                placeholder="Ej. Empresa S.A."
               />
             </div>
             <div className="form-group">
@@ -216,7 +216,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
               type="text"
               value={clienteDireccion}
               onChange={(e) => setClienteDireccion(e.target.value)}
-              placeholder="Ej. Av. Siempre Viva 123"
+              placeholder="Ej. Av. Antofagasta #123, Antofagasta"
             />
           </div>
         </div>
@@ -231,7 +231,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                 type="text"
                 value={asunto}
                 onChange={(e) => setAsunto(e.target.value)}
-                placeholder="Ej. Implementación en minería"
+                placeholder="Ej. Accesorios para minería"
               />
             </div>
             <div className="form-group">

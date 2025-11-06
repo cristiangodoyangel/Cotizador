@@ -217,7 +217,8 @@
   /* 2b. Oculta el menú lateral (sidebar) y otros elementos comunes */
   body.modal-is-open-for-print nav,
   body.modal-is-open-for-print aside,
-  body.modal-is-open-for-print header {
+  body.modal-is-open-for-print header,
+  body.modal-is-open-for-print footer {
     display: none !important;
   }
   /* --- FIN DE LA NUEVA REGLA --- */

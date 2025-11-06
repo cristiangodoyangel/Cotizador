@@ -4,7 +4,8 @@ import "./Footer.css";
 function Footer() {
   return (
     <footer className="app-footer">
-      <p>creado por weblogica.cl</p>
+      <p>creado por www.weblogica.cl</p>
+      <a href="https://www.weblogica.cl">www.weblogica.cl</a>
       <p>&copy; {new Date().getFullYear()} - Sistema de Cotización</p>
     </footer>
   );

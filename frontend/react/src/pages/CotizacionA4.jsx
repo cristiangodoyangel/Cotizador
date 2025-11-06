@@ -2,12 +2,21 @@ import React from "react";
 // TOTALMENTE ELIMINADAS las importaciones de 'useRef' y 'useReactToPrint'
 // import logo from "../assets/img/logo.png"; // Usamos placeholder, tu logo original daba error de compilación
 import "./CotizacionA4.css";
+import logo from "../assets/img/logo.png"; //
 
 const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
   // TOTALMENTE ELIMINADAS las llamadas a 'useRef' y 'useReactToPrint'
 
-  const handleNativePrint = () => {
+  const handlePrint = () => {
+    // 1. Guardar el título original del documento.
+    const originalTitle = document.title;
+    // 2. Establecer el título deseado para el nombre del archivo PDF.
+    document.title = `COTIZACIÓN N° ${cotizacion.numero}`;
+    // 3. Llamar a la función de impresión del navegador.
     window.print();
+    // 4. Restaurar el título original después de que se abre el diálogo.
+    // Esto se ejecuta rápidamente, pero el diálogo de impresión ya ha capturado el título.
+    document.title = originalTitle;
   };
 
   if (!cotizacion) {
@@ -36,7 +45,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
         {/* --- ENCABEZADO --- */}
         <div className="cotizacion-header">
           <img
-            src="https://placehold.co/180x70/062568/FFFFFF?text=Logo+Empresa"
+            src={logo}
             alt="Logo Yajasa"
             className="cotizacion-logo-yasaja"
           />
@@ -160,7 +169,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
 
         {/* --- BOTÓN DE IMPRESIÓN NATIVA --- */}
         {showPrintButton && (
-          <button onClick={handleNativePrint} className="action-button">
+          <button onClick={handlePrint} className="action-button">
             Imprimir
           </button>
         )}
