@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../api"; // Tu API sigue igual
 import "./Login.css";
-// import logo from "../assets/img/logo.png"; // (Descomenta si tienes logo)
+import logo from "../assets/img/logo.png"; // (Descomenta si tienes logo)
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -42,7 +42,9 @@ const Login = () => {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
-        {/* <img src={logo} alt="Logo" className="login-logo" /> */}
+        <div>
+          <img src={logo} alt="Logo" className="login-logo" />
+        </div>
         <h2>Iniciar Sesión</h2>
         <div className="form-group">
           <label htmlFor="username">Usuario</label>
@@ -67,7 +69,8 @@ const Login = () => {
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit" disabled={loading}>
+
+        <button type="submit" disabled={loading} className="login-button">
           {loading ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
