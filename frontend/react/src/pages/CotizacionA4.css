@@ -146,7 +146,7 @@
 .cotizacion-table td {
   border: 1px solid #061c32;
   padding: 0.6rem;
-  text-align: left;
+  text-align: right;
   vertical-align: top;
 }
 

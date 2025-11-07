@@ -4,7 +4,6 @@ import "./Footer.css";
 function Footer() {
   return (
     <footer className="app-footer">
-      <p>creado por www.weblogica.cl</p>
       <a className="link" href="https://www.weblogica.cl">
         www.weblogica.cl
       </a>

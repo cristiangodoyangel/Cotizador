@@ -16,13 +16,18 @@ const ListadoCotizaciones = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estados para el modal
+  // Estados para el modal PDF
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
 
-  // --- ¡¡AQUÍ ESTABA EL ERROR!! ---
-  // Estas líneas las borré por accidente. Ahora están de vuelta.
+  // --- NUEVO: Estados para el modal de eliminación ---
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [quoteToDelete, setQuoteToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  // --- FIN NUEVO ---
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "numero",
@@ -30,7 +35,6 @@ const ListadoCotizaciones = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  // --- FIN DEL ERROR ---
 
   useEffect(() => {
     const fetchCotizaciones = async () => {
@@ -51,8 +55,6 @@ const ListadoCotizaciones = () => {
     }
   }, [location, navigate]);
 
-  // --- CÓDIGO DE SOLUCIÓN DE IMPRESIÓN ---
-  // Este efecto agrega/quita una clase del <body>
   useEffect(() => {
     if (modalVisible) {
       document.body.classList.add("modal-is-open-for-print");
@@ -63,7 +65,6 @@ const ListadoCotizaciones = () => {
       document.body.classList.remove("modal-is-open-for-print");
     };
   }, [modalVisible]);
-  // --- FIN DEL CÓDIGO DE SOLUCIÓN ---
 
   const formatCurrency = (value) => {
     return parseFloat(value).toLocaleString("es-CL", {
@@ -72,11 +73,8 @@ const ListadoCotizaciones = () => {
     });
   };
 
-  // Hook useMemo para procesar los datos (filtrar y ordenar)
   const processedItems = useMemo(() => {
     let filteredItems = [...cotizaciones];
-
-    // Filtrado (Ahora 'searchTerm' existe)
     if (searchTerm) {
       filteredItems = filteredItems.filter(
         (item) =>
@@ -93,8 +91,6 @@ const ListadoCotizaciones = () => {
           item.asunto?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
-    // Ordenamiento (Ahora 'sortConfig' existe)
     if (sortConfig.key) {
       filteredItems.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -106,16 +102,13 @@ const ListadoCotizaciones = () => {
         return 0;
       });
     }
-
     return filteredItems;
   }, [cotizaciones, searchTerm, sortConfig]);
 
-  // Efecto para resetear la paginación
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, sortConfig]);
 
-  // Hook useMemo para la paginación
   const paginatedItems = useMemo(() => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -139,18 +132,45 @@ const ListadoCotizaciones = () => {
     setSortConfig({ key, direction });
   };
 
-  const handleEliminar = async (cotizacionId) => {
-    if (
-      window.confirm("¿Estás seguro de que deseas eliminar esta cotización?")
-    ) {
-      try {
-        await eliminarCotizacion(cotizacionId);
-        setCotizaciones(cotizaciones.filter((cot) => cot.id !== cotizacionId));
-      } catch (err) {
-        alert("Error al eliminar la cotización: " + err.message);
-      }
+  // --- MODIFICADO: Lógica de eliminación ---
+
+  // 1. Abre el modal de confirmación
+  const openDeleteConfirmModal = (cotizacionId) => {
+    const quote = cotizaciones.find((c) => c.id === cotizacionId);
+    setQuoteToDelete(quote);
+    setIsDeleteModalOpen(true);
+    setDeleteError(null); // Resetea cualquier error anterior
+  };
+
+  // 2. Cierra el modal de confirmación
+  const closeDeleteModal = () => {
+    if (isDeleting) return; // No permitir cerrar mientras se elimina
+    setIsDeleteModalOpen(false);
+    setQuoteToDelete(null);
+    setDeleteError(null);
+    setIsDeleting(false);
+  };
+
+  // 3. Ejecuta la eliminación
+  const confirmDelete = async () => {
+    if (!quoteToDelete) return;
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      await eliminarCotizacion(quoteToDelete.id);
+      setCotizaciones(
+        cotizaciones.filter((cot) => cot.id !== quoteToDelete.id)
+      );
+      closeDeleteModal(); // Cierra el modal al tener éxito
+    } catch (err) {
+      setDeleteError("Error al eliminar la cotización: " + err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
+  // --- FIN MODIFICADO ---
 
   const handleVerPdf = async (cotizacionId) => {
     setModalVisible(true);
@@ -200,6 +220,7 @@ const ListadoCotizaciones = () => {
           <table className="data-table">
             <thead>
               <tr>
+                {/* ... (tus otros <th>) ... */}
                 <th onClick={() => requestSort("numero")}>
                   Número{" "}
                   {sortConfig.key === "numero" &&
@@ -240,12 +261,14 @@ const ListadoCotizaciones = () => {
                       >
                         PDF
                       </button>
+                      {/* --- MODIFICADO: El onClick ahora abre el modal --- */}
                       <button
-                        onClick={() => handleEliminar(cot.id)}
+                        onClick={() => openDeleteConfirmModal(cot.id)}
                         className="btn-action2"
                       >
                         Eliminar
                       </button>
+                      {/* --- FIN MODIFICADO --- */}
                     </td>
                   </tr>
                 ))
@@ -259,6 +282,7 @@ const ListadoCotizaciones = () => {
             </tbody>
           </table>
         </div>
+        {/* ... (tu paginación) ... */}
         {totalPages > 1 && (
           <div className="pagination">
             <button
@@ -290,6 +314,7 @@ const ListadoCotizaciones = () => {
         )}
       </div>
 
+      {/* Modal de Ver PDF (existente) */}
       {modalVisible && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -309,6 +334,51 @@ const ListadoCotizaciones = () => {
           </div>
         </div>
       )}
+
+      {/* --- NUEVO: Modal de Confirmación de Eliminación --- */}
+      {isDeleteModalOpen && (
+        <div className="modal-overlay" onClick={closeDeleteModal}>
+          <div
+            className="modal-content delete-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={closeDeleteModal} className="modal-close-btn">
+              &times;
+            </button>
+            <h3>Confirmar Eliminación</h3>
+            <p>
+              ¿Estás seguro de que deseas eliminar la cotización{" "}
+              <strong>#{quoteToDelete?.numero}</strong> (Cliente:{" "}
+              <strong>
+                {quoteToDelete?.cliente_empresa ||
+                  quoteToDelete?.cliente_nombre}
+              </strong>
+              )?
+            </p>
+            <p>Esta acción no se puede deshacer.</p>
+
+            {deleteError && <p className="modal-error">{deleteError}</p>}
+
+            <div className="modal-actions">
+              <button
+                className="modal-btn modal-btn-cancel"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+              >
+                Cancelar
+              </button>
+              <button
+                className="modal-btn modal-btn-confirm"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Eliminando..." : "Sí, eliminar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- FIN NUEVO --- */}
     </div>
   );
 };

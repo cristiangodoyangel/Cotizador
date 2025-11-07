@@ -1,9 +1,60 @@
-#root {
+/*
+ * =========================================
+ * 1. RESET Y CONFIGURACIÓN GLOBAL
+ * =========================================
+ */
+
+/* Hacemos que la app ocupe la altura completa */
+html, body, #root, .App {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* El 'div' principal de tu App.jsx */
+.App {
+  /* Se asegura de que ocupe la altura para el layout */
+}
+
+
+/*
+ * =========================================
+ * 2. ESTILOS PARA EL STICKY FOOTER
+ * =========================================
+ */
+
+/* El 'div' que envuelve Header, Main y Footer en MainLayout */
+.main-layout-container {
+  display: flex;
+  flex-direction: column; /* Apila los elementos (Header, Main, Footer) */
+  min-height: 100vh;     /* Ocupa, como MÍNIMO, toda la altura de la pantalla */
+}
+
+/* El contenido principal (main) */
+.main-content {
+  /* * Esta es la magia: 'flex-grow: 1' le dice al 'main' que 
+   * "crezca" y ocupe todo el espacio vacío disponible, 
+   * empujando al Footer hacia abajo.
+   */
+  flex-grow: 1;
+
+  /* * Aquí movemos los estilos que estaban mal en #root.
+   * Queremos centrar el *contenido*, no toda la página.
+   */
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  width: 100%; /* Asegura que ocupe el ancho */
+  box-sizing: border-box; /* El padding no aumenta el ancho */
 }
+
+
+/*
+ * =========================================
+ * 3. ESTILOS DE LA PLANTILLA VITE (Tus estilos originales)
+ * =========================================
+ * (Estos están bien, los mantenemos)
+ */
 
 .logo {
   height: 6em;

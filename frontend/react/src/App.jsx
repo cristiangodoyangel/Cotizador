@@ -1,28 +1,43 @@
+// src/App.jsx
+// ESTE ES EL CÓDIGO FINAL Y CORREGIDO
+
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import CrearCotizacion from "./pages/CrearCotizacion";
+import { Routes, Route } from "react-router-dom"; // Sin BrowserRouter aquí
+
+// Tus Páginas
+import Login from "./pages/Login";
 import ListadoCotizaciones from "./pages/ListadoCotizaciones";
-import ListadoClientes from "./pages/ListadoClientes";
-import "./App.css";
+import CrearCotizacion from "./pages/CrearCotizacion";
+import ListadoClientes from "./pages/ListadoClientes"; // (Lo vi en tu código original)
+
+// Tus Componentes de Estructura
+import ProtectedRoute from "./components/ProtectedRoute";
+import MainLayout from "./components/MainLayout"; // ¡El "molde" que acabamos de hacer!
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<ListadoCotizaciones />} />
-            <Route path="/crear-cotizacion" element={<CrearCotizacion />} />
-            <Route path="/cotizaciones" element={<ListadoCotizaciones />} />
-            <Route path="/clientes" element={<ListadoClientes />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <Routes>
+      {/* Ruta 1: PÚBLICA (Sin Header/Footer) */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Ruta 2: PRIVADA (Con Header/Footer) */}
+      <Route element={<ProtectedRoute />}>
+        {" "}
+        {/* 1. Revisa si hay sesión */}
+        <Route element={<MainLayout />}>
+          {" "}
+          {/* 2. Si sí, aplica el molde (Header/Footer) */}
+          {/* 3. Renderiza estas páginas DENTRO del molde */}
+          <Route path="/" element={<ListadoCotizaciones />} />
+          <Route path="/crear-cotizacion" element={<CrearCotizacion />} />
+          <Route path="/cotizaciones" element={<ListadoCotizaciones />} />
+          <Route path="/clientes" element={<ListadoClientes />} />
+        </Route>
+      </Route>
+
+      {/* Ruta 3: 404 */}
+      <Route path="*" element={<p>Página no encontrada (404)</p>} />
+    </Routes>
   );
 }
 

@@ -1,29 +1,40 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom"; // Importar Link y useNavigate
+import { useAuth } from "../context/AuthContext"; // Importar el contexto
 import "./Header.css";
+import logo from "../assets/img/logo.png";
 
 function Header() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <header className="app-header">
       <div className="container">
-        <img src="src/assets/img/logo.png" alt="Logo" className="logo" />
+        <img src={logo} alt="Logo" className="logo" />
       </div>
 
       <nav>
         <ul>
           <li>
-            <a className="nav-link" href="/crear-cotizacion">
+            <Link className="nav-link" to="/crear-cotizacion">
               Crear Cotización
-            </a>
+            </Link>
           </li>
           <li>
-            <a className="nav-link" href="/cotizaciones">
+            <Link className="nav-link" to="/cotizaciones">
               Ver Cotizaciones
-            </a>
+            </Link>
           </li>
           <li>
-            <a className="nav-link" href="/clientes">
+            <Link className="nav-link" to="/clientes">
               Clientes
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>

@@ -294,3 +294,78 @@
 
   /* --- FIN DE NUEVAS REGLAS --- */
 }
+
+/* --- NUEVO: Estilos para el Modal de Eliminación --- */
+
+/* Puedes ajustar el ancho de este modal específico */
+.delete-modal-content {
+  max-width: 500px; /* Un ancho más pequeño que el del PDF */
+  padding: 2rem;
+  text-align: center;
+}
+
+.delete-modal-content h3 {
+  margin-top: 0;
+  color: #c9302c; /* Un color de "peligro" */
+}
+
+.delete-modal-content p {
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* Contenedor para los botones de acción */
+.modal-actions {
+  display: flex;
+  justify-content: center; /* Centra los botones */
+  gap: 1rem; /* Espacio entre botones */
+  margin-top: 1.5rem;
+}
+
+/* Estilo base para los botones del modal */
+.modal-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Botón de Cancelar (color secundario) */
+.modal-btn-cancel {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.modal-btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+/* Botón de Confirmar (color de peligro) */
+.modal-btn-confirm {
+  background-color: #d9534f; /* Rojo */
+  color: white;
+}
+
+.modal-btn-confirm:hover {
+  background-color: #c9302c; /* Rojo más oscuro */
+}
+
+/* Estilo para botones deshabilitados */
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estilo para el mensaje de error dentro del modal */
+.modal-error {
+  background-color: #fdd; /* Fondo rojo claro */
+  color: #a00; /* Texto rojo oscuro */
+  border: 1px solid #a00;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
