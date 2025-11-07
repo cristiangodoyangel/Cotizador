@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-rb!2lc40o93e2hf$%oodc-(92l962n23f^lp7$5w+@l4*wna00"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['yajasatechnology.cl', 'www.yajasatechnology.cl', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
     "corsheaders",
     "cotizacion",
+
 ]
 
 MIDDLEWARE = [
@@ -74,7 +76,20 @@ WSGI_APPLICATION = "cotizador.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.hctcotwzdwummkmzczec', 
+        'PASSWORD': 'Calama1..12',               
+        'HOST': 'aws-1-us-east-2.pooler.supabase.com', 
+
+        
+        'PORT': '5432',
+    }
+}
+"""
 
 DATABASES = {
     "default": {
@@ -82,6 +97,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
 
 
 # Password validation
@@ -126,6 +143,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # REST Framework configuration
+# REST Framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -133,6 +151,18 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
+    
+    # --- AÑADE ESTAS LÍNEAS ---
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # Le dice a DRF que use JWT para la autenticación
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        # Bloquea todas las APIs por defecto.
+        # Solo usuarios autenticados (con un token válido) podrán acceder.
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    # --- FIN DE LÍNEAS A AÑADIR ---
 }
 
 # CORS configuration for Astro frontend
