@@ -11,10 +11,6 @@ html, body, #root, .App {
   padding: 0;
 }
 
-/* El 'div' principal de tu App.jsx */
-.App {
-  /* Se asegura de que ocupe la altura para el layout */
-}
 
 
 /*
@@ -67,6 +63,16 @@ html, body, #root, .App {
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* <-- ¡Esta es la clave! */
+}
+
+.main-content {
+  flex-grow: 1; /* <-- ¡Esta es la segunda clave! */
 }
 
 @keyframes logo-spin {

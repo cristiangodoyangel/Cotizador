@@ -33,4 +33,14 @@ body {
   --color-border: #dee2e6;
 }
 
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* <-- ¡Esta es la clave! */
+}
+
+.main-content {
+  flex-grow: 1; /* <-- ¡Esta es la segunda clave! */
+}
+
 
