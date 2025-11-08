@@ -29,6 +29,10 @@
   display: inline-block; /* Asegura que el padding se aplique bien */
 }
 
+.logo-img {
+  width: 210px;
+}
+
 .nav-link:hover {
   background-color: var(--color-primary-hover);
   color: var(--color-primary);

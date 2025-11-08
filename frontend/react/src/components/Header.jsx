@@ -16,7 +16,7 @@ function Header() {
   return (
     <header className="app-header">
       <div className="container">
-        <img src={logo} alt="Logo" className="logo" />
+        <img src={logo} alt="Logo" className="logo-img" />
       </div>
 
       <nav>

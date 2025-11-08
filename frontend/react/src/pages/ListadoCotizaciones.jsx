@@ -204,7 +204,7 @@ const ListadoCotizaciones = () => {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Listado de Cotizaciones</h1>
+        <h1 className="page-titulo">Listado de Cotizaciones</h1>
       </div>
       <div className="controls-container">
         <input
