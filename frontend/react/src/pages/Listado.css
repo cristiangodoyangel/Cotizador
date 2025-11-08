@@ -2,8 +2,8 @@
 .controls-container {
   margin-bottom: 1rem;
   display: flex;
-  margin-left: 32px;
-  margin-top: 62px;
+  margin-left: 0; /* O simplemente elimina la línea */
+  margin-top: 0;  /* O ajústalo a un valor más pequeño como 1rem */
 }
 
 .search-input {
@@ -51,6 +51,7 @@
 .actions-cell {
   display: flex;
   gap: 0.5rem;
+  justify-content: right;
 }
 
 .btn-action {
@@ -97,7 +98,7 @@
   color: #dc3545;
 }
 
-/* Paginación */
+
 .pagination {
   display: flex;
   justify-content: flex-end;
@@ -131,7 +132,7 @@
   border-color: var(--color-primary);
 }
 
-/* Usamos los estilos de CrearCotizacion.css para el contenedor y header */
+
 .page-container {
   width: 100%;
   max-width: 1100px;
@@ -390,3 +391,4 @@
   border-radius: 5px;
   margin-top: 1rem;
 }
+
