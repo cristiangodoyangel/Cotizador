@@ -6,3 +6,5 @@ django-cors-headers
 psycopg2-binary
 gunicorn
 djangorestframework-simplejwt
+python-decouple
+dj-database-url

@@ -198,7 +198,7 @@ const ListadoCotizaciones = () => {
 
   const closeModal = () => setModalVisible(false);
 
-  if (loading) return <p>Cargando cotizaciones...</p>;
+  if (loading) return <p className="cargando">Cargando cotizaciones...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
