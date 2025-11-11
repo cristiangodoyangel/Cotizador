@@ -67,7 +67,12 @@ const ListadoCotizaciones = () => {
   }, [modalVisible]);
 
   const formatCurrency = (value) => {
-    return parseFloat(value).toLocaleString("es-CL", {
+    // Verificamos si 'value' es un número válido antes de formatear
+    const parsedValue = parseFloat(value);
+    if (isNaN(parsedValue)) {
+      return "$0"; // O '$NaN' si prefieres, pero $0 es más limpio
+    }
+    return parsedValue.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
     });
@@ -82,21 +87,35 @@ const ListadoCotizaciones = () => {
             ?.toString()
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          item.cliente_empresa
+          /* --- MODIFICADO (1/4): Leer del objeto anidado 'cliente' --- */
+          item.cliente?.empresa
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          item.cliente_nombre
+          item.cliente?.nombre_contacto
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
+          /* --- FIN MODIFICADO --- */
+
           item.asunto?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     if (sortConfig.key) {
+      // --- NOTA: El sortConfig necesitará un ajuste más profundo
+      // --- para ordenar por campos anidados. Por ahora, lo dejamos así.
       filteredItems.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        // --- MODIFICADO (Opcional): Lógica básica para ordenar por cliente ---
+        if (sortConfig.key === "cliente_empresa") {
+          aValue = a.cliente?.empresa || a.cliente?.nombre_contacto;
+          bValue = b.cliente?.empresa || b.cliente?.nombre_contacto;
+        }
+
+        if (aValue < bValue) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
+        if (aValue > bValue) {
           return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;
@@ -132,62 +151,51 @@ const ListadoCotizaciones = () => {
     setSortConfig({ key, direction });
   };
 
-  // --- MODIFICADO: Lógica de eliminación ---
-
-  // 1. Abre el modal de confirmación
+  // ... (lógica de eliminación sin cambios) ...
   const openDeleteConfirmModal = (cotizacionId) => {
     const quote = cotizaciones.find((c) => c.id === cotizacionId);
     setQuoteToDelete(quote);
     setIsDeleteModalOpen(true);
-    setDeleteError(null); // Resetea cualquier error anterior
+    setDeleteError(null);
   };
-
-  // 2. Cierra el modal de confirmación
   const closeDeleteModal = () => {
-    if (isDeleting) return; // No permitir cerrar mientras se elimina
+    if (isDeleting) return;
     setIsDeleteModalOpen(false);
     setQuoteToDelete(null);
     setDeleteError(null);
     setIsDeleting(false);
   };
-
-  // 3. Ejecuta la eliminación
   const confirmDelete = async () => {
     if (!quoteToDelete) return;
-
     setIsDeleting(true);
     setDeleteError(null);
-
     try {
       await eliminarCotizacion(quoteToDelete.id);
       setCotizaciones(
         cotizaciones.filter((cot) => cot.id !== quoteToDelete.id)
       );
-      closeDeleteModal(); // Cierra el modal al tener éxito
+      closeDeleteModal();
     } catch (err) {
       setDeleteError("Error al eliminar la cotización: " + err.message);
     } finally {
       setIsDeleting(false);
     }
   };
-  // --- FIN MODIFICADO ---
 
+  /* --- MODIFICADO (2/4): 'handleVerPdf' ahora es mucho más simple --- */
   const handleVerPdf = async (cotizacionId) => {
     setModalVisible(true);
     setLoadingModal(true);
     setSelectedCotizacion(null);
     try {
+      // La 'cotizacionData' que recibimos de la API
+      // ya tiene la estructura anidada correcta (cliente: {}, items: [])
+      // gracias a nuestros nuevos Serializers de Django.
       const cotizacionData = await obtenerCotizacion(cotizacionId);
-      const cotizacionParaVista = {
-        ...cotizacionData,
-        cliente: {
-          nombre: cotizacionData.cliente_nombre,
-          empresa: cotizacionData.cliente_empresa,
-          email: cotizacionData.cliente_email,
-          telefono: cotizacionData.cliente_telefono,
-        },
-      };
-      setSelectedCotizacion(cotizacionParaVista);
+
+      // Ya no necesitamos construir 'cotizacionParaVista'.
+      // Simplemente usamos la data tal como viene.
+      setSelectedCotizacion(cotizacionData);
     } catch (err) {
       alert("Error al cargar la cotización: " + err.message);
       setModalVisible(false);
@@ -195,11 +203,9 @@ const ListadoCotizaciones = () => {
       setLoadingModal(false);
     }
   };
+  /* --- FIN MODIFICADO --- */
 
   const closeModal = () => setModalVisible(false);
-
-  // --- INICIO DE LA SECCIÓN CORREGIDA ---
-  // Se eliminan los 'if (loading)' y 'if (error)' de aquí.
 
   return (
     <div className="page-container">
@@ -207,15 +213,11 @@ const ListadoCotizaciones = () => {
         <h1 className="page-titulo">Listado de Cotizaciones</h1>
       </div>
 
-      {/* La lógica de carga y error ahora se maneja DENTRO del 'page-container'
-        para que los mensajes aparezcan centrados y dentro del layout.
-      */}
       {loading ? (
         <p className="cargando">Cargando cotizaciones...</p>
       ) : error ? (
         <p className="error-cargando">Error al cargar cotizaciones: {error}</p>
       ) : (
-        // Si no hay carga ni error, mostramos el contenido principal
         <>
           <div className="mb-3 controls-container">
             <div className="search-input-wrapper">
@@ -250,7 +252,6 @@ const ListadoCotizaciones = () => {
               <table className="data-table">
                 <thead>
                   <tr>
-                    {/* ... (tus otros <th>) ... */}
                     <th onClick={() => requestSort("numero")}>
                       Número{" "}
                       {sortConfig.key === "numero" &&
@@ -261,6 +262,7 @@ const ListadoCotizaciones = () => {
                       {sortConfig.key === "fecha" &&
                         (sortConfig.direction === "ascending" ? "↑" : "↓")}
                     </th>
+                    {/* Hacemos clic en 'cliente_empresa' para ordenar */}
                     <th onClick={() => requestSort("cliente_empresa")}>
                       Cliente{" "}
                       {sortConfig.key === "cliente_empresa" &&
@@ -283,7 +285,14 @@ const ListadoCotizaciones = () => {
                         <td>
                           {new Date(cot.fecha).toLocaleDateString("es-CL")}
                         </td>
-                        <td>{cot.cliente_empresa || cot.cliente_nombre}</td>
+
+                        {/* --- MODIFICADO (3/4): Leer del objeto anidado 'cliente' --- */}
+                        <td>
+                          {cot.cliente?.empresa ||
+                            cot.cliente?.nombre_contacto ||
+                            "Cliente no disponible"}
+                        </td>
+
                         <td>{cot.asunto}</td>
                         <td>{formatCurrency(cot.total)}</td>
                         <td className="actions-cell">
@@ -293,14 +302,12 @@ const ListadoCotizaciones = () => {
                           >
                             PDF
                           </button>
-                          {/* --- MODIFICADO: El onClick ahora abre el modal --- */}
                           <button
                             onClick={() => openDeleteConfirmModal(cot.id)}
                             className="btn-action2"
                           >
                             Eliminar
                           </button>
-                          {/* --- FIN MODIFICADO --- */}
                         </td>
                       </tr>
                     ))
@@ -347,7 +354,6 @@ const ListadoCotizaciones = () => {
           </div>
         </>
       )}
-      {/* --- FIN DE LA SECCIÓN CORREGIDA --- */}
 
       {/* Modal de Ver PDF (existente) */}
       {modalVisible && (
@@ -383,9 +389,10 @@ const ListadoCotizaciones = () => {
             <p>
               ¿Estás seguro de que deseas eliminar la cotización{" "}
               <strong>#{quoteToDelete?.numero}</strong> (Cliente:{" "}
+              {/* --- MODIFICADO (4/4): Leer del objeto anidado 'cliente' --- */}
               <strong>
-                {quoteToDelete?.cliente_empresa ||
-                  quoteToDelete?.cliente_nombre}
+                {quoteToDelete?.cliente?.empresa ||
+                  quoteToDelete?.cliente?.nombre_contacto}
               </strong>
               )?
             </p>
