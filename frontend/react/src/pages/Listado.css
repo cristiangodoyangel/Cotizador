@@ -18,7 +18,7 @@
 .cargando-indicator {
   margin-left: 1rem;
   align-self: center;
-  color: var(--color-primary);
+  color: #a00;
 }
 
 .table-responsive {
