@@ -1,21 +1,12 @@
 import React from "react";
-// TOTALMENTE ELIMINADAS las importaciones de 'useRef' y 'useReactToPrint'
-// import logo from "../assets/img/logo.png"; // Usamos placeholder, tu logo original daba error de compilación
 import "./CotizacionA4.css";
-import logo from "../assets/img/logo.png"; //
+import logo from "../assets/img/logo.png"; // Asumiendo que la ruta es correcta
 
 const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
-  // TOTALMENTE ELIMINADAS las llamadas a 'useRef' y 'useReactToPrint'
-
   const handlePrint = () => {
-    // 1. Guardar el título original del documento.
     const originalTitle = document.title;
-    // 2. Establecer el título deseado para el nombre del archivo PDF.
     document.title = `COTIZACIÓN N° ${cotizacion.numero}`;
-    // 3. Llamar a la función de impresión del navegador.
     window.print();
-    // 4. Restaurar el título original después de que se abre el diálogo.
-    // Esto se ejecuta rápidamente, pero el diálogo de impresión ya ha capturado el título.
     document.title = originalTitle;
   };
 
@@ -27,9 +18,11 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
     );
   }
 
+  // Desestructuramos los datos
   const {
-    cliente,
-    items,
+    cliente, // <-- Este es el objeto anidado 'cliente'
+    empresa, // <-- Este es el objeto anidado 'empresa' (Yajasa)
+    items, // <-- Esta es la lista de items
     numero,
     fecha,
     subtotal,
@@ -39,10 +32,21 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
     observaciones,
   } = cotizacion;
 
+  // --- Funciones seguras para formatear ---
+  const formatCliente = (field) => cliente?.[field] || "N/A";
+  const formatEmpresa = (field) => empresa?.[field] || "N/A";
+  const formatCurrency = (value) => {
+    const parsedValue = parseFloat(value);
+    if (isNaN(parsedValue)) {
+      return "$0";
+    }
+    return parsedValue.toLocaleString("es-CL");
+  };
+
   return (
     <div className="cotizacion-a4">
       <div className="cotizacion-content">
-        {/* --- ENCABEZADO --- */}
+        {/* --- ENCABEZADO (Usa el objeto 'empresa' anidado) --- */}
         <div className="cotizacion-header">
           <img
             src={logo}
@@ -50,11 +54,11 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
             className="cotizacion-logo-yasaja"
           />
           <div className="cotizacion-company-info">
-            <h2>Yajasa Technology</h2>
-            <p>RUT: 77.182.974-0</p>
-            <p>Uribe 636 Of 707, Centro Negocios, Antofagasta</p>
-            <p>Teléfono: +56-9-42920058</p>
-            <p>Email: yajasa.technology@gmail.com</p>
+            <h2>{formatEmpresa("nombre")}</h2>
+            <p>RUT: {formatEmpresa("rut")}</p>
+            <p>{formatEmpresa("direccion")}</p>
+            <p>Teléfono: {formatEmpresa("telefono")}</p>
+            <p>Email: {formatEmpresa("email")}</p>
           </div>
         </div>
 
@@ -74,23 +78,24 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           </div>
         </div>
 
-        {/* --- DATOS DEL CLIENTE --- */}
+        {/* --- DATOS DEL CLIENTE (Usa el objeto 'cliente' anidado) --- */}
         <div className="cotizacion-cliente">
+          {/* --- CORRECCIÓN CLAVE --- */}
           <p>
-            <strong>Señores:</strong> {cliente.empresa}
+            <strong>Señores:</strong> {formatCliente("empresa")}
           </p>
           <p>
-            <strong>Atención:</strong> {cliente.nombre}
+            <strong>Atención:</strong> {formatCliente("nombre_contacto")}
           </p>
           <p>
-            <strong>Email:</strong> {cliente.email}
+            <strong>Email:</strong> {formatCliente("email")}
           </p>
           <p>
-            <strong>Teléfono:</strong> {cliente.telefono}
+            <strong>Teléfono:</strong> {formatCliente("telefono")}
           </p>
         </div>
 
-        {/* --- TABLA DE ARTÍCULOS Y TOTALES (FUSIONADAS) --- */}
+        {/* --- TABLA DE ARTÍCULOS Y TOTALES --- */}
         <table className="cotizacion-table">
           <thead>
             <tr>
@@ -106,48 +111,50 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
-              <tr key={item.id || index}>
-                <td>{index + 1}</td>
-                <td>{item.cantidad}</td>
-                <td>{item.caracteristica}</td>
-                <td className="text-right">
-                  $
-                  {(parseFloat(item.valor_unitario) || 0).toLocaleString(
-                    "es-CL"
-                  )}
-                </td>
-                <td className="text-right">
-                  $
-                  {(item.cantidad * item.valor_unitario).toLocaleString(
-                    "es-CL"
-                  )}
+            {items && items.length > 0 ? (
+              items.map((item, index) => (
+                <tr key={item.id || index}>
+                  <td>{index + 1}</td>
+                  <td>{item.cantidad}</td>
+
+                  {/* --- CORRECCIÓN CLAVE --- */}
+                  <td>{item.descripcion}</td>
+
+                  <td className="text-right">
+                    ${formatCurrency(item.precio_unitario)}
+                  </td>
+
+                  <td className="text-right">${formatCurrency(item.total)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="5"
+                  style={{ textAlign: "center", padding: "2rem" }}
+                >
+                  No se han agregado artículos a esta cotización.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
-          {/* --- TOTALES MOVIDOS AL TFOOT DE LA TABLA PRINCIPAL --- */}
+
+          {/* --- TOTALES --- */}
           <tfoot>
             <tr>
               <td colSpan="3" className="summary-empty"></td>
               <td className="summary-label">Subtotal:</td>
-              <td className="summary-value">
-                ${(parseFloat(subtotal) || 0).toLocaleString("es-CL")}
-              </td>
+              <td className="summary-value">${formatCurrency(subtotal)}</td>
             </tr>
             <tr>
               <td colSpan="3" className="summary-empty"></td>
               <td className="summary-label">IVA (19%):</td>
-              <td className="summary-value">
-                ${(parseFloat(iva) || 0).toLocaleString("es-CL")}
-              </td>
+              <td className="summary-value">${formatCurrency(iva)}</td>
             </tr>
             <tr className="total-row-final">
               <td colSpan="3" className="summary-empty"></td>
               <td className="summary-label">TOTAL</td>
-              <td className="summary-value">
-                ${(parseFloat(total) || 0).toLocaleString("es-CL")}
-              </td>
+              <td className="summary-value">${formatCurrency(total)}</td>
             </tr>
           </tfoot>
         </table>
@@ -161,13 +168,12 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
         </div>
       </div>
 
-      {/* --- BOTONES DE ACCIÓN (NO SE IMPRIMEN GRACIAS A @media print) --- */}
+      {/* --- BOTONES DE ACCIÓN --- */}
       <div className="cotizacion-actions">
         <button onClick={onBack} className="action-button secondary">
           Cerrar
         </button>
 
-        {/* --- BOTÓN DE IMPRESIÓN NATIVA --- */}
         {showPrintButton && (
           <button onClick={handlePrint} className="action-button">
             Imprimir
