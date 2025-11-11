@@ -70,7 +70,9 @@ class Cotizacion(models.Model):
     cliente = models.ForeignKey(
         Cliente, 
         on_delete=models.PROTECT, 
-        related_name="cotizaciones"
+        related_name="cotizaciones",
+        null=True,  # Le dice a la BASE DE DATOS que permita valores nulos
+        blank=True  # Le dice a DJANGO (ej. el admin) que permita el campo vacío
     )
     
     # --- LOS CAMPOS 'cliente_*' HAN SIDO ELIMINADOS DE AQUÍ ---
@@ -159,7 +161,7 @@ class ItemCotizacion(models.Model):
         on_delete=models.CASCADE, 
         related_name="items"  # <-- Esto permite usar 'self.items.all()'
     )
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField(max_length=255, null=True, blank=True)
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(
         max_digits=12, 
