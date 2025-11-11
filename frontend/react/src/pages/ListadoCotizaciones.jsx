@@ -198,140 +198,157 @@ const ListadoCotizaciones = () => {
 
   const closeModal = () => setModalVisible(false);
 
-  if (loading) return <p className="cargando">Cargando cotizaciones...</p>;
-  if (error) return <p>Error: {error}</p>;
+  // --- INICIO DE LA SECCIÓN CORREGIDA ---
+  // Se eliminan los 'if (loading)' y 'if (error)' de aquí.
 
   return (
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-titulo">Listado de Cotizaciones</h1>
       </div>
-      <div className="mb-3 controls-container">
-        <div className="search-input-wrapper">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.25"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            className="icon-tabler icon-tabler-search"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-            <path d="M21 21l-6 -6" />
-          </svg>
 
-          <input
-            type="text"
-            placeholder="Buscar por N°, cliente, asunto..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="form-control search-input"
-          />
-        </div>
-      </div>
-      <div className="card">
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                {/* ... (tus otros <th>) ... */}
-                <th onClick={() => requestSort("numero")}>
-                  Número{" "}
-                  {sortConfig.key === "numero" &&
-                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
-                </th>
-                <th onClick={() => requestSort("fecha")}>
-                  Fecha{" "}
-                  {sortConfig.key === "fecha" &&
-                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
-                </th>
-                <th onClick={() => requestSort("cliente_empresa")}>
-                  Cliente{" "}
-                  {sortConfig.key === "cliente_empresa" &&
-                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
-                </th>
-                <th>Asunto</th>
-                <th onClick={() => requestSort("total")}>
-                  Total{" "}
-                  {sortConfig.key === "total" &&
-                    (sortConfig.direction === "ascending" ? "↑" : "↓")}
-                </th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.length > 0 ? (
-                currentItems.map((cot) => (
-                  <tr key={cot.numero}>
-                    <td>#{cot.numero}</td>
-                    <td>{new Date(cot.fecha).toLocaleDateString("es-CL")}</td>
-                    <td>{cot.cliente_empresa || cot.cliente_nombre}</td>
-                    <td>{cot.asunto}</td>
-                    <td>{formatCurrency(cot.total)}</td>
-                    <td className="actions-cell">
-                      <button
-                        onClick={() => handleVerPdf(cot.id)}
-                        className="btn-action"
-                      >
-                        PDF
-                      </button>
-                      {/* --- MODIFICADO: El onClick ahora abre el modal --- */}
-                      <button
-                        onClick={() => openDeleteConfirmModal(cot.id)}
-                        className="btn-action2"
-                      >
-                        Eliminar
-                      </button>
-                      {/* --- FIN MODIFICADO --- */}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: "center" }}>
-                    No se encontraron resultados.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* ... (tu paginación) ... */}
-        {totalPages > 1 && (
-          <div className="pagination">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              &laquo; Anterior
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-              (number) => (
-                <button
-                  key={number}
-                  onClick={() => paginate(number)}
-                  className={`page-number ${
-                    currentPage === number ? "active" : ""
-                  }`}
-                >
-                  {number}
-                </button>
-              )
-            )}
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Siguiente &raquo;
-            </button>
+      {/* La lógica de carga y error ahora se maneja DENTRO del 'page-container'
+        para que los mensajes aparezcan centrados y dentro del layout.
+      */}
+      {loading ? (
+        <p className="cargando">Cargando cotizaciones...</p>
+      ) : error ? (
+        <p className="error-cargando">Error al cargar cotizaciones: {error}</p>
+      ) : (
+        // Si no hay carga ni error, mostramos el contenido principal
+        <>
+          <div className="mb-3 controls-container">
+            <div className="search-input-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                className="icon-tabler icon-tabler-search"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                <path d="M21 21l-6 -6" />
+              </svg>
+
+              <input
+                type="text"
+                placeholder="Buscar por N°, cliente, asunto..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-control search-input"
+              />
+            </div>
           </div>
-        )}
-      </div>
+          <div className="card">
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    {/* ... (tus otros <th>) ... */}
+                    <th onClick={() => requestSort("numero")}>
+                      Número{" "}
+                      {sortConfig.key === "numero" &&
+                        (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                    </th>
+                    <th onClick={() => requestSort("fecha")}>
+                      Fecha{" "}
+                      {sortConfig.key === "fecha" &&
+                        (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                    </th>
+                    <th onClick={() => requestSort("cliente_empresa")}>
+                      Cliente{" "}
+                      {sortConfig.key === "cliente_empresa" &&
+                        (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                    </th>
+                    <th>Asunto</th>
+                    <th onClick={() => requestSort("total")}>
+                      Total{" "}
+                      {sortConfig.key === "total" &&
+                        (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                    </th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.length > 0 ? (
+                    currentItems.map((cot) => (
+                      <tr key={cot.numero}>
+                        <td>#{cot.numero}</td>
+                        <td>
+                          {new Date(cot.fecha).toLocaleDateString("es-CL")}
+                        </td>
+                        <td>{cot.cliente_empresa || cot.cliente_nombre}</td>
+                        <td>{cot.asunto}</td>
+                        <td>{formatCurrency(cot.total)}</td>
+                        <td className="actions-cell">
+                          <button
+                            onClick={() => handleVerPdf(cot.id)}
+                            className="btn-action"
+                          >
+                            PDF
+                          </button>
+                          {/* --- MODIFICADO: El onClick ahora abre el modal --- */}
+                          <button
+                            onClick={() => openDeleteConfirmModal(cot.id)}
+                            className="btn-action2"
+                          >
+                            Eliminar
+                          </button>
+                          {/* --- FIN MODIFICADO --- */}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" style={{ textAlign: "center" }}>
+                        No se encontraron resultados.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {/* ... (tu paginación) ... */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  &laquo; Anterior
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (number) => (
+                    <button
+                      key={number}
+                      onClick={() => paginate(number)}
+                      className={`page-number ${
+                        currentPage === number ? "active" : ""
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente &raquo;
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+      {/* --- FIN DE LA SECCIÓN CORREGIDA --- */}
+
       {/* Modal de Ver PDF (existente) */}
       {modalVisible && (
         <div className="modal-overlay" onClick={closeModal}>
