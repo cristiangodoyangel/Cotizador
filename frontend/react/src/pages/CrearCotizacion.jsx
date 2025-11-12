@@ -1,14 +1,13 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // 1. Importar useNavigate
-import { crearCotizacionCompleta, getClientes } from "../api"; // Importamos getClientes
+import { useNavigate } from "react-router-dom";
+import { crearCotizacionCompleta, getClientes } from "../api";
 import "./CrearCotizacion.css";
 
 const CrearCotizacion = ({ onCotizacionCreada }) => {
-  const navigate = useNavigate(); // 2. Inicializar useNavigate
+  const navigate = useNavigate();
 
   const [clienteEmpresa, setClienteEmpresa] = useState("");
   const [clienteContacto, setClienteContacto] = useState("");
-  // El campo clienteDireccion no se usa en el payload, pero lo mantenemos por si se necesita
   const [clienteDireccion, setClienteDireccion] = useState("");
   const [clienteEmail, setClienteEmail] = useState("");
   const [clienteTelefono, setClienteTelefono] = useState("");
@@ -16,12 +15,12 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   const [tiempoEntrega, setTiempoEntrega] = useState("");
   const [asunto, setAsunto] = useState("");
 
+  // --- CAMBIO 1: Usar los nombres de campo correctos del modelo ItemCotizacion ---
   const [items, setItems] = useState([
-    { id: 1, cantidad: 1, caracteristica: "", precioUnitario: 0 },
+    { id: 1, cantidad: 1, descripcion: "", precio_unitario: 0 },
   ]);
 
   const [notas, setNotas] = useState("");
-  // ELIMINADO: Ya no necesitamos el estado local para mostrar el A4 aquí.
 
   // Estados para la búsqueda de clientes
   const [clientes, setClientes] = useState([]);
@@ -38,7 +37,8 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     setClienteTelefono("");
     setAsunto("");
     setTiempoEntrega("1 Día, Esperando que la oferta sea de su aceptación");
-    setItems([{ id: 1, cantidad: 1, caracteristica: "", precioUnitario: 0 }]);
+    // --- CAMBIO 2: Usar los nombres de campo correctos ---
+    setItems([{ id: 1, cantidad: 1, descripcion: "", precio_unitario: 0 }]);
     setNotas("");
   };
 
@@ -47,11 +47,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     const cargarClientes = async () => {
       try {
         const data = await getClientes();
-        // Filtramos para evitar duplicados exactos si la API los devolviera
-        const clientesUnicos = Array.from(
-          new Set(data.map(JSON.stringify))
-        ).map(JSON.parse);
-        setClientes(clientesUnicos);
+        setClientes(data); // getClientes ahora devuelve clientes únicos desde la API
       } catch (error) {
         console.error("Error al cargar clientes:", error);
       }
@@ -68,9 +64,10 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   const handleAddItem = () => {
     const newId =
       items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1;
+    // --- CAMBIO 3: Usar los nombres de campo correctos ---
     setItems([
       ...items,
-      { id: newId, cantidad: 1, caracteristica: "", precioUnitario: 0 },
+      { id: newId, cantidad: 1, descripcion: "", precio_unitario: 0 },
     ]);
   };
 
@@ -79,19 +76,26 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   };
 
   const { subtotal, impuestos, total } = useMemo(() => {
+    // --- CAMBIO 4: Usar 'precio_unitario' (snake_case) para el cálculo ---
     const sub = items.reduce(
-      (sum, item) => sum + item.cantidad * item.precioUnitario,
+      (sum, item) => sum + Number(item.cantidad) * Number(item.precio_unitario),
       0
     );
-    const imp = sub * 0.19; // Asumiendo 19% de IVA como en el backend original
+    const imp = sub * 0.19;
     const tot = sub + imp;
     return { subtotal: sub, impuestos: imp, total: tot };
   }, [items]);
 
+  // Estandarizamos el formato de moneda a es-CL (peso chileno)
   const formatCurrency = (value) => {
-    return value.toLocaleString("en-US", {
+    const parsedValue = parseFloat(value);
+    if (isNaN(parsedValue)) {
+      return "$0";
+    }
+    return parsedValue.toLocaleString("es-CL", {
       style: "currency",
-      currency: "USD",
+      currency: "CLP",
+      minimumFractionDigits: 0, // Opcional: para no mostrar decimales ($105.910)
     });
   };
 
@@ -99,12 +103,13 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     const query = e.target.value;
     setBusquedaCliente(query);
     if (query.length > 1) {
+      // --- CAMBIO 5: Usar los nuevos campos del modelo Cliente ('empresa', 'nombre_contacto') ---
       const filtrados = clientes.filter(
         (c) =>
-          (c.cliente_empresa &&
-            c.cliente_empresa.toLowerCase().includes(query.toLowerCase())) ||
-          (c.cliente_nombre &&
-            c.cliente_nombre.toLowerCase().includes(query.toLowerCase()))
+          (c.empresa &&
+            c.empresa.toLowerCase().includes(query.toLowerCase())) ||
+          (c.nombre_contacto &&
+            c.nombre_contacto.toLowerCase().includes(query.toLowerCase()))
       );
       setResultadosBusqueda(filtrados);
       setMostrarResultados(true);
@@ -115,11 +120,12 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   };
 
   const handleSelectCliente = (cliente) => {
-    setClienteEmpresa(cliente.cliente_empresa || "");
-    setClienteContacto(cliente.cliente_nombre || "");
-    setClienteEmail(cliente.cliente_email || "");
-    setClienteTelefono(cliente.cliente_telefono || "");
-    setClienteDireccion(cliente.cliente_direccion || "");
+    // --- CAMBIO 6: Usar los nuevos campos del modelo Cliente ---
+    setClienteEmpresa(cliente.empresa || "");
+    setClienteContacto(cliente.nombre_contacto || "");
+    setClienteEmail(cliente.email || "");
+    setClienteTelefono(cliente.telefono || "");
+    setClienteDireccion(cliente.direccion || "");
     setMostrarResultados(false);
     setBusquedaCliente("");
   };
@@ -128,30 +134,33 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     e.preventDefault();
 
     const payload = {
-      // La empresa se asigna por defecto en el backend (ID=1)
+      // Campos del cliente (el backend espera 'cliente_nombre', etc. como definimos en la view)
       cliente_nombre: clienteContacto,
       cliente_empresa: clienteEmpresa,
       cliente_email: clienteEmail,
       cliente_telefono: clienteTelefono,
       cliente_direccion: clienteDireccion,
+
+      // Detalles de la cotización
       asunto: asunto,
       tiempo_entrega: tiempoEntrega,
       observaciones: notas,
-      // El backend recalcula los totales, pero los enviamos como referencia si es necesario
+
+      // Totales (se recalcularán en el backend, pero los enviamos)
       subtotal: subtotal,
       iva: impuestos,
       total: total,
+
+      // --- CAMBIO 7: Enviar los nombres de campo correctos al backend ---
       items: items.map((item) => ({
         cantidad: item.cantidad,
-        caracteristica: item.caracteristica,
-        valor_unitario: item.precioUnitario,
+        descripcion: item.descripcion, // 'caracteristica' -> 'descripcion'
+        precio_unitario: item.precio_unitario, // 'precioUnitario' -> 'precio_unitario'
       })),
     };
 
     try {
       const nuevaCotizacion = await crearCotizacionCompleta(payload);
-
-      // 3. Redirigir a la lista y pasar el ID de la nueva cotización
       navigate("/cotizaciones", {
         state: { newCotizacionId: nuevaCotizacion.id },
       });
@@ -168,10 +177,12 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="cotizacion-form">
-        {/* Información del Cliente */}
+        {/* ... (El formulario de cliente se queda igual, los estados están bien) ... */}
+
         <div className="card">
           <h2>Información del Cliente</h2>
-
+          {/* (Tu JSX para el cliente está bien) */}
+          {/* ... */}
           <div className="form-row">
             <div className="form-group">
               <label>Nombre del Cliente / Empresa</label>
@@ -221,7 +232,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           </div>
         </div>
 
-        {/* Detalles de la Cotización */}
+        {/* ... (Detalles de la cotización se queda igual) ... */}
         <div className="card">
           <h2>Detalles de la Cotización</h2>
           <div className="form-row">
@@ -246,7 +257,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           </div>
         </div>
 
-        {/* Artículos Cotizados */}
+        {/* --- CAMBIO 8: Actualizar el JSX de la tabla de items --- */}
         <div className="card">
           <h2>Artículos Cotizados</h2>
           <div className="items-table">
@@ -273,32 +284,41 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                 />
                 <input
                   type="text"
-                  value={item.caracteristica}
-                  onChange={(e) =>
-                    handleItemChange(item.id, "caracteristica", e.target.value)
+                  value={
+                    item.descripcion
+                  } /* 'caracteristica' -> 'descripcion' */
+                  onChange={
+                    (e) =>
+                      handleItemChange(
+                        item.id,
+                        "descripcion",
+                        e.target.value
+                      ) /* 'caracteristica' -> 'descripcion' */
                   }
                 />
                 <input
                   type="number"
                   min="0"
-                  step="0.01" // Puedes cambiar esto a 1 si no usas decimales
-                  value={item.precioUnitario}
+                  step="0.01"
+                  value={
+                    item.precio_unitario
+                  } /* 'precioUnitario' -> 'precio_unitario' */
                   onChange={(e) =>
                     handleItemChange(
                       item.id,
-                      "precioUnitario",
+                      "precio_unitario" /* 'precioUnitario' -> 'precio_unitario' */,
                       Number(e.target.value)
                     )
                   }
                 />
                 <input
                   type="text"
-                  value={(
-                    Number(item.cantidad * item.precioUnitario) || 0
-                  ).toLocaleString("es-CL")}
+                  value={formatCurrency(
+                    // Usamos la función de formato
+                    Number(item.cantidad * item.precio_unitario) || 0 // 'precioUnitario' -> 'precio_unitario'
+                  )}
                   readOnly
                 />
-                {/* Solo mostrar el botón de eliminar si hay más de un item */}
                 {items.length > 1 ? (
                   <button
                     type="button"
@@ -335,21 +355,22 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           <div className="card totals-card">
             <div className="total-row">
               <span>Subtotal</span>
-              {/* CORREGIDO */}
-              <span>${(Number(subtotal) || 0).toLocaleString("es-CL")}</span>
+              <span>{formatCurrency(subtotal)}</span>{" "}
+              {/* Usamos la función de formato */}
             </div>
             <div className="total-row">
               <span>Impuestos (IVA 19%)</span>
-              {/* CORREGIDO */}
-              <span>${(Number(impuestos) || 0).toLocaleString("es-CL")}</span>
+              <span>{formatCurrency(impuestos)}</span>{" "}
+              {/* Usamos la función de formato */}
             </div>
             <div className="total-row total">
               <strong>Total</strong>
-              {/* CORREGIDO */}
-              <strong>${(Number(total) || 0).toLocaleString("es-CL")}</strong>
+              <strong>{formatCurrency(total)}</strong>{" "}
+              {/* Usamos la función de formato */}
             </div>
           </div>
         </div>
+
         {/* Acciones */}
         <div className="form-actions">
           <button type="submit" className="btn-primary">
