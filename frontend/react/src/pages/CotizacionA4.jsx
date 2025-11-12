@@ -40,7 +40,13 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
     if (isNaN(parsedValue)) {
       return "$0";
     }
-    return parsedValue.toLocaleString("es-CL");
+
+    // AÑADIMOS OPCIONES: Le decimos que no muestre decimales.
+    // Esto automáticamente redondeará el valor.
+    return parsedValue.toLocaleString("es-CL", {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    });
   };
 
   return (
