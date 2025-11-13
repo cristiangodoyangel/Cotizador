@@ -185,6 +185,13 @@ const CotizacionA4 = ({
           Cerrar
         </button>
 
+        {/* --- CAMBIO (4/4): OCULTAR "IMPRIMIR" EN MÓVIL --- */}
+        {showPrintButton && (
+          <button onClick={handlePrint} className="action-button">
+            Imprimir
+          </button>
+        )}
+
         {/* --- CAMBIO (3/4): BOTÓN DE ELIMINAR NUEVO --- */}
         {/* Solo se muestra si la prop 'onDelete' existe */}
         {onDelete && (
@@ -194,13 +201,6 @@ const CotizacionA4 = ({
             className="action-button danger show-on-mobile-flex"
           >
             Eliminar
-          </button>
-        )}
-
-        {/* --- CAMBIO (4/4): OCULTAR "IMPRIMIR" EN MÓVIL --- */}
-        {showPrintButton && (
-          <button onClick={handlePrint} className="action-button">
-            Imprimir
           </button>
         )}
       </div>
