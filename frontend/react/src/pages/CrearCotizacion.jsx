@@ -257,11 +257,11 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           </div>
         </div>
 
-        {/* --- CAMBIO 8: Actualizar el JSX de la tabla de items --- */}
         <div className="card">
           <h2>Artículos Cotizados</h2>
           <div className="items-table">
             <div className="items-header">
+              {/* (Las cabeceras de escritorio se mantienen, se ocultarán en móvil) */}
               <span>Cantidad</span>
               <span>Descripción</span>
               <span>Precio Unitario</span>
@@ -270,66 +270,89 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
             </div>
             {items.map((item) => (
               <div key={item.id} className="item-row">
-                <input
-                  type="number"
-                  min="1"
-                  value={item.cantidad}
-                  onChange={(e) =>
-                    handleItemChange(
-                      item.id,
-                      "cantidad",
-                      Number(e.target.value)
-                    )
-                  }
-                />
-                <input
-                  type="text"
-                  value={
-                    item.descripcion
-                  } /* 'caracteristica' -> 'descripcion' */
-                  onChange={
-                    (e) =>
+                {/* --- 1. CANTIDAD (con Label y Placeholder) --- */}
+                <div className="form-group-item item-cantidad">
+                  <label htmlFor={`cantidad-${item.id}`}>Cantidad</label>
+                  <input
+                    id={`cantidad-${item.id}`}
+                    type="number"
+                    min="1"
+                    value={item.cantidad}
+                    placeholder="1"
+                    onChange={(e) =>
                       handleItemChange(
                         item.id,
-                        "descripcion",
-                        e.target.value
-                      ) /* 'caracteristica' -> 'descripcion' */
-                  }
-                />
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={
-                    item.precio_unitario
-                  } /* 'precioUnitario' -> 'precio_unitario' */
-                  onChange={(e) =>
-                    handleItemChange(
-                      item.id,
-                      "precio_unitario" /* 'precioUnitario' -> 'precio_unitario' */,
-                      Number(e.target.value)
-                    )
-                  }
-                />
-                <input
-                  type="text"
-                  value={formatCurrency(
-                    // Usamos la función de formato
-                    Number(item.cantidad * item.precio_unitario) || 0 // 'precioUnitario' -> 'precio_unitario'
+                        "cantidad",
+                        Number(e.target.value)
+                      )
+                    }
+                  />
+                </div>
+
+                {/* --- 2. DESCRIPCIÓN (con Label y Placeholder) --- */}
+                <div className="form-group-item item-descripcion">
+                  <label htmlFor={`descripcion-${item.id}`}>Descripción</label>
+                  <input
+                    id={`descripcion-${item.id}`}
+                    type="text"
+                    value={item.descripcion}
+                    placeholder="Ej. Servicio de instalación"
+                    onChange={(e) =>
+                      handleItemChange(item.id, "descripcion", e.target.value)
+                    }
+                  />
+                </div>
+
+                {/* --- 3. PRECIO UNITARIO (con Label y Placeholder) --- */}
+                <div className="form-group-item item-precio">
+                  <label htmlFor={`precio_unitario-${item.id}`}>
+                    P. Unitario
+                  </label>
+                  <input
+                    id={`precio_unitario-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.precio_unitario}
+                    placeholder="50000"
+                    onChange={(e) =>
+                      handleItemChange(
+                        item.id,
+                        "precio_unitario",
+                        Number(e.target.value)
+                      )
+                    }
+                  />
+                </div>
+
+                {/* --- 4. IMPORTE (con Label) --- */}
+                <div className="form-group-item item-total">
+                  <label htmlFor={`importe-${item.id}`}>Importe</label>
+                  <input
+                    id={`importe-${item.id}`}
+                    type="text"
+                    value={formatCurrency(
+                      Number(item.cantidad * item.precio_unitario) || 0
+                    )}
+                    readOnly
+                    placeholder="$0"
+                  />
+                </div>
+
+                {/* --- 5. BOTÓN DE ELIMINAR (con wrapper) --- */}
+                <div className="form-group-item item-row-button">
+                  {items.length > 1 ? (
+                    <button
+                      type="button"
+                      className="delete-item-btn"
+                      onClick={() => handleRemoveItem(item.id)}
+                    >
+                      🗑️
+                    </button>
+                  ) : (
+                    <span></span>
                   )}
-                  readOnly
-                />
-                {items.length > 1 ? (
-                  <button
-                    type="button"
-                    className="delete-item-btn"
-                    onClick={() => handleRemoveItem(item.id)}
-                  >
-                    🗑️
-                  </button>
-                ) : (
-                  <span></span>
-                )}
+                </div>
               </div>
             ))}
           </div>
@@ -341,6 +364,10 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
             + Agregar Artículo
           </button>
         </div>
+        {/* // ====================================================================
+        // --- FIN DE LA CORRECCIÓN DE ARTÍCULOS COTIZADOS ---
+        // ====================================================================
+        */}
 
         {/* Notas y Totales */}
         <div className="summary-section">
