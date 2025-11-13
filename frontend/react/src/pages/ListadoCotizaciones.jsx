@@ -268,8 +268,11 @@ const ListadoCotizaciones = () => {
                       {sortConfig.key === "cliente_empresa" &&
                         (sortConfig.direction === "ascending" ? "↑" : "↓")}
                     </th>
-                    <th>Asunto</th>
-                    <th onClick={() => requestSort("total")}>
+                    <th className="hide-on-mobile">Asunto</th>
+                    <th
+                      className="hide-on-mobile"
+                      onClick={() => requestSort("total")}
+                    >
                       Total{" "}
                       {sortConfig.key === "total" &&
                         (sortConfig.direction === "ascending" ? "↑" : "↓")}
@@ -293,8 +296,10 @@ const ListadoCotizaciones = () => {
                             "Cliente no disponible"}
                         </td>
 
-                        <td>{cot.asunto}</td>
-                        <td>{formatCurrency(cot.total)}</td>
+                        <td className="hide-on-mobile">{cot.asunto}</td>
+                        <td className="hide-on-mobile">
+                          {formatCurrency(cot.total)}
+                        </td>
                         <td className="actions-cell">
                           <button
                             onClick={() => handleVerPdf(cot.id)}
@@ -355,7 +360,6 @@ const ListadoCotizaciones = () => {
         </>
       )}
 
-      {/* Modal de Ver PDF (existente) */}
       {modalVisible && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

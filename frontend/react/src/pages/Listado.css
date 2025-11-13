@@ -417,3 +417,28 @@
   }
 
 }
+
+
+.hide-on-mobile {
+  
+}
+
+
+@media (max-width: 768px) {
+  
+
+  .hide-on-mobile {
+    display: none;
+  }
+
+
+  .data-table {
+    font-size: 0.9rem;
+  }
+
+
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem 0.4rem;
+  }
+}
