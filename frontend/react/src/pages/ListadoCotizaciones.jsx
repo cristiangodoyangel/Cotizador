@@ -304,7 +304,7 @@ const ListadoCotizaciones = () => {
                         <td className="hide-on-mobile">
                           {formatCurrency(cot.total)}
                         </td>
-                        <td className="hide-on-mobile">
+                        <td className="hide-on-mobile actions-cell">
                           <button
                             onClick={() => handleVerPdf(cot.id)}
                             className="btn-action"
