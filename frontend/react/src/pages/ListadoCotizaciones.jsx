@@ -284,7 +284,12 @@ const ListadoCotizaciones = () => {
                   {currentItems.length > 0 ? (
                     currentItems.map((cot) => (
                       <tr key={cot.numero}>
-                        <td>#{cot.numero}</td>
+                        <td
+                          onClick={() => handleVerPdf(cot.id)}
+                          className="clickable-id"
+                        >
+                          #{cot.numero}
+                        </td>
                         <td>
                           {new Date(cot.fecha).toLocaleDateString("es-CL")}
                         </td>

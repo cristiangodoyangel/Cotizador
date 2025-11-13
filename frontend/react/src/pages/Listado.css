@@ -398,6 +398,18 @@
   margin-top: 1rem;
 }
 
+.clickable-id {
+  font-weight: bold;
+  color: var(--color-primary); /* Un color de enlace azul */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-id:hover {
+  text-decoration: underline;
+  background-color: #f4f4f4; /* Un sutil hover */
+}
+
 @media (max-width: 768px) {
   
   .table-responsive {
