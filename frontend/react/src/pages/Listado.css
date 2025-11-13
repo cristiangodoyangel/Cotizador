@@ -1,9 +1,9 @@
-/* Contenedor para controles como la búsqueda */
+/* --- Estilos base (Tu código original) --- */
 .controls-container {
   margin-bottom: 1rem;
   display: flex;
-  margin-left: 0; /* O simplemente elimina la línea */
-  margin-top: 0;  /* O ajústalo a un valor más pequeño como 1rem */
+  margin-left: 0;
+  margin-top: 0;
 }
 
 .search-input {
@@ -29,14 +29,14 @@
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid var(--color-border); /* Borde exterior para la tabla */
+  border: 1px solid var(--color-border);
 }
 
 .data-table th,
 .data-table td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border: 1px solid var(--color-border); /* Bordes para todas las celdas */
+  border: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
@@ -45,9 +45,9 @@
   font-size: 0.8rem;
   color: #062568;
   text-transform: uppercase;
-  background-color: #e9ecef; /* Un gris un poco más notorio */
-  cursor: pointer; /* Indica que se puede hacer clic */
-  user-select: none; /* Evita que el texto se seleccione al hacer clic */
+  background-color: #e9ecef;
+  cursor: pointer;
+  user-select: none;
 }
 
 .data-table tbody tr:hover {
@@ -94,16 +94,15 @@
   border-color: var(--color-primary);
 }
 
+/* (Tu estilo original .btn-danger, sobrescrito más abajo) */
 .btn-action.btn-danger {
-  background-color: rgba(255, 255, 255, 0.1);;
+  background-color: rgba(255, 255, 255, 0.1);
   border-color: #0c0256;
 }
-
 .btn-action.btn-danger:hover {
   background-color: white;
   color: #dc3545;
 }
-
 
 .pagination {
   display: flex;
@@ -112,7 +111,8 @@
   gap: 0.5rem;
 }
 
-.pagination button, .pagination .page-number {
+.pagination button,
+.pagination .page-number {
   background: none;
   border: 1px solid var(--color-border);
   color: var(--color-primary);
@@ -138,7 +138,6 @@
   border-color: var(--color-primary);
 }
 
-
 .page-container {
   width: 100%;
   max-width: 1100px;
@@ -153,34 +152,31 @@
 .page-header h1.page-titulo {
   font-size: 2.5rem;
   font-weight: 400;
-  color: #ffffff; 
+  color: #ffffff;
   margin: 0;
-  margin-left: 1.5rem; 
+  margin-left: 1.5rem;
 }
-
-
 
 .search-input-wrapper {
   position: relative;
   width: 100%;
-  max-width: 400px; 
+  max-width: 400px;
 }
 
 .search-input-wrapper .icon-tabler {
   position: absolute;
   top: 50%;
-  left: 1rem;  
+  left: 1rem;
   transform: translateY(-50%);
   color: #6c757d;
   width: 24px;
-  height: 24px; 
+  height: 24px;
   pointer-events: none;
 }
 
 .search-input-wrapper .search-input {
-  padding-left: 3rem;  
+  padding-left: 3rem;
 }
-
 
 .modal-overlay {
   position: fixed;
@@ -191,19 +187,19 @@
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: flex-start; 
+  align-items: flex-start;
   z-index: 1000;
-  overflow-y: auto; 
+  overflow-y: auto;
   padding: 2rem;
 }
 
 .modal-content {
   position: relative;
-  background-color: #dcdcdc; 
+  background-color: #dcdcdc;
   padding: 0;
   border-radius: 8px;
   width: auto;
-  max-width: 210mm; 
+  max-width: 210mm;
 }
 
 .modal-close-btn {
@@ -218,42 +214,28 @@
   height: 30px;
   font-size: 1.5rem;
   cursor: pointer;
-  z-index: 1010; 
+  z-index: 1010;
 }
 
-
+/* --- Estilos de Impresión (Tu código original) --- */
 @media print {
   @page {
     margin: 0;
     size: A4;
   }
-
-  /* 1. Resetea el body */
   body {
     margin: 0 !important;
     padding: 0 !important;
   }
-  
-  /* 2. Oculta TODOS los hijos del .page-container
-     (Tu .page-header, .controls-container, .card)
-  */
   body.modal-is-open-for-print .page-container > * {
     display: none !important;
   }
-  
-  /* --- INICIO DE LA NUEVA REGLA --- */
-  /* 2b. Oculta el menú lateral (sidebar) y otros elementos comunes */
   body.modal-is-open-for-print nav,
   body.modal-is-open-for-print aside,
   body.modal-is-open-for-print header,
   body.modal-is-open-for-print footer {
     display: none !important;
   }
-  /* --- FIN DE LA NUEVA REGLA --- */
-
-  /* 3. EXCEPCIÓN: Muestra SÓLO el overlay del modal
-     y lo resetea para que ocupe todo
-  */
   body.modal-is-open-for-print .page-container > .modal-overlay {
     display: block !important;
     position: static !important;
@@ -262,8 +244,6 @@
     overflow: visible !important;
     background: none !important;
   }
-
-  /* 4. Resetea el modal-content (que está dentro del overlay) */
   body.modal-is-open-for-print .modal-content {
     position: static !important;
     display: block !important;
@@ -274,83 +254,52 @@
     margin: 0 !important;
     padding: 0 !important;
   }
-
-  /* 5. Anula la altura de la hoja A4 (el problema de la página extra) */
   body.modal-is-open-for-print .cotizacion-a4 {
     min-height: auto !important;
     box-shadow: none !important;
     margin: 0 !important;
     border: none !important;
   }
-  
-  /* 6. Oculta los botones (que están dentro del .modal-content) */
   body.modal-is-open-for-print .modal-close-btn,
   body.modal-is-open-for-print .cotizacion-actions {
     display: none !important;
   }
-
-  /* --- INICIO DE NUEVAS REGLAS DE COMPRESIÓN --- */
-
-  /* 7. Reduce el padding (márgenes internos) de la página */
   body.modal-is-open-for-print .cotizacion-content {
-    /* Reducimos de 20mm. Prueba con 15mm o 10mm si es necesario */
     padding: 15mm !important;
   }
-
-  /* 8. ELIMINA el margen superior excesivo del header (el de 50px) */
   body.modal-is-open-for-print .cotizacion-header {
     margin-top: 0 !important;
-    margin-bottom: 1rem !important; /* Reducido de 1.5rem */
-    padding-bottom: 1rem !important; /* Reducido de 1.5rem */
+    margin-bottom: 1rem !important;
+    padding-bottom: 1rem !important;
   }
-
-  /* 9. Reduce los espacios entre los bloques */
   body.modal-is-open-for-print .cotizacion-cliente {
-    margin-bottom: 1rem !important; /* Reducido de 1.5rem */
+    margin-bottom: 1rem !important;
   }
-
   body.modal-is-open-for-print .cotizacion-footer-text {
-    margin-top: 1.5rem !important; /* Reducido de 2rem */
+    margin-top: 1.5rem !important;
   }
-
-  /* 10. (Opcional) Si sigue sin caber, reduce un poco la letra */
-  /*
-  body.modal-is-open-for-print .cotizacion-a4 {
-    font-size: 11px !important;
-  }
-  */
-
-  /* --- FIN DE NUEVAS REGLAS --- */
 }
 
-/* --- NUEVO: Estilos para el Modal de Eliminación --- */
-
-/* Puedes ajustar el ancho de este modal específico */
+/* --- Modal de Eliminación (Tu código original) --- */
 .delete-modal-content {
-  max-width: 500px; /* Un ancho más pequeño que el del PDF */
+  max-width: 500px;
   padding: 2rem;
   text-align: center;
 }
-
 .delete-modal-content h3 {
   margin-top: 0;
-  color: #c9302c; /* Un color de "peligro" */
+  color: #c9302c;
 }
-
 .delete-modal-content p {
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
-
-/* Contenedor para los botones de acción */
 .modal-actions {
   display: flex;
-  justify-content: center; /* Centra los botones */
-  gap: 1rem; /* Espacio entre botones */
+  justify-content: center;
+  gap: 1rem;
   margin-top: 1.5rem;
 }
-
-/* Estilo base para los botones del modal */
 .modal-btn {
   padding: 10px 20px;
   border: none;
@@ -360,114 +309,113 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-/* Botón de Cancelar (color secundario) */
 .modal-btn-cancel {
   background-color: #f0f0f0;
   color: #333;
   border: 1px solid #ccc;
 }
-
 .modal-btn-cancel:hover {
   background-color: #e0e0e0;
 }
-
-/* Botón de Confirmar (color de peligro) */
 .modal-btn-confirm {
-  background-color: #d9534f; /* Rojo */
+  background-color: #d9534f;
   color: white;
 }
-
 .modal-btn-confirm:hover {
-  background-color: #c9302c; /* Rojo más oscuro */
+  background-color: #c9302c;
 }
-
-/* Estilo para botones deshabilitados */
 .modal-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-/* Estilo para el mensaje de error dentro del modal */
 .modal-error {
-  background-color: #fdd; /* Fondo rojo claro */
-  color: #a00; /* Texto rojo oscuro */
+  background-color: #fdd;
+  color: #a00;
   border: 1px solid #a00;
   padding: 10px;
   border-radius: 5px;
   margin-top: 1rem;
 }
 
+/* --- ID Clickeable (Tu código original) --- */
 .clickable-id {
   font-weight: bold;
-  color: var(--color-primary); /* Un color de enlace azul */
+  color: var(--color-primary);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .clickable-id:hover {
   text-decoration: underline;
-  background-color: #f4f4f4; /* Un sutil hover */
+  background-color: #f4f4f4;
 }
 
+/* * --- INICIO DE NUEVOS ESTILOS RESPONSIVOS ---
+ */
+
+/* (Botón de eliminar en el modal) */
+.action-button.danger {
+  background-color: #dc3545; /* Rojo de "peligro" */
+  color: white;
+  border-color: #dc3545;
+}
+.action-button.danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* (Por defecto, en escritorio, está oculto) */
+.show-on-mobile-flex {
+  display: none;
+}
+
+/* (Clase para ocultar en móvil, ya la tenías) */
+.hide-on-mobile {
+  /* Se muestra por defecto */
+}
+
+/* --- BLOQUE RESPONSIVO CONSOLIDADO --- */
+/* Aplicado a pantallas de 768px o menos */
 @media (max-width: 768px) {
   
+  /* (De tu 1er bloque) */
   .table-responsive {
     width: 100%;
-    
-    /* ¡LA LÍNEA MÁGICA! */
-    /* Añade un scroll horizontal SOLO a este div */
-    overflow-x: auto; 
-    
-    /* Para que el scroll sea suave en iOS */
-    -webkit-overflow-scrolling: touch; 
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* OPCIONAL: Hacemos la letra un poco más pequeña en la tabla */
-  .data-table {
-    font-size: 0.9rem; 
-  }
-
-}
-
-
-.hide-on-mobile {
-  
-}
-
-
-@media (max-width: 768px) {
-  
-
-  .hide-on-mobile {
-    display: none;
-  }
-
-
+  /* (De tu 2do y 3er bloque, consolidados) */
   .data-table {
     font-size: 0.9rem;
   }
 
-
+  /* (De tu 2do bloque) */
   .data-table th,
   .data-table td {
     padding: 0.5rem 0.4rem;
   }
-}
 
-/* ... al final de Listado.css, añade este media query ... */
-
-@media (max-width: 768px) {
-  
-  /* ... (tus otras clases responsive como .hide-on-mobile) ... */
-
+  /* (De tu 3er bloque) */
   .modal-content {
-    width: 98vw; /* Ocupa casi todo el ancho de la pantalla */
-    height: 95vh; /* Ocupa casi todo el alto */
+    width: 98vw;
+    height: 95vh;
     padding: 0.5rem;
-    
-    /* ¡IMPORTANTE! 
-       Permite hacer scroll vertical DENTRO del modal */
-    overflow-y: auto; 
+    overflow-y: auto;
+  }
+  
+  /* (De tu 2do bloque) */
+  .hide-on-mobile {
+    display: none;
+  }
+
+  /* (NUEVO: Para mostrar el botón de eliminar en modal móvil) */
+  .show-on-mobile-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1; /* Opcional: hace que ocupe más espacio */
   }
 }
+/* * --- FIN DE NUEVOS ESTILOS RESPONSIVOS ---
+ */

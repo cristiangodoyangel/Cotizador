@@ -2,7 +2,13 @@ import React from "react";
 import "./CotizacionA4.css";
 import logo from "../assets/img/logo.png"; // Asumiendo que la ruta es correcta
 
-const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
+// --- CAMBIO (1/4): Acepta la nueva prop 'onDelete' ---
+const CotizacionA4 = ({
+  cotizacion,
+  onBack,
+  onDelete, // <-- Prop nueva
+  showPrintButton = true,
+}) => {
   const handlePrint = () => {
     const originalTitle = document.title;
     document.title = `COTIZACIÓN N° ${cotizacion.numero}`;
@@ -20,9 +26,9 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
 
   // Desestructuramos los datos
   const {
-    cliente, // <-- Este es el objeto anidado 'cliente'
-    empresa, // <-- Este es el objeto anidado 'empresa' (Yajasa)
-    items, // <-- Esta es la lista de items
+    cliente,
+    empresa,
+    items,
     numero,
     fecha,
     subtotal,
@@ -35,14 +41,13 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
   // --- Funciones seguras para formatear ---
   const formatCliente = (field) => cliente?.[field] || "N/A";
   const formatEmpresa = (field) => empresa?.[field] || "N/A";
+
+  // (Tu función 'formatCurrency' ya estaba correcta para no mostrar decimales)
   const formatCurrency = (value) => {
     const parsedValue = parseFloat(value);
     if (isNaN(parsedValue)) {
       return "$0";
     }
-
-    // AÑADIMOS OPCIONES: Le decimos que no muestre decimales.
-    // Esto automáticamente redondeará el valor.
     return parsedValue.toLocaleString("es-CL", {
       maximumFractionDigits: 0,
       minimumFractionDigits: 0,
@@ -52,7 +57,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
   return (
     <div className="cotizacion-a4">
       <div className="cotizacion-content">
-        {/* --- ENCABEZADO (Usa el objeto 'empresa' anidado) --- */}
+        {/* --- ENCABEZADO (Sin cambios) --- */}
         <div className="cotizacion-header">
           <img
             src={logo}
@@ -68,7 +73,7 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           </div>
         </div>
 
-        {/* --- TÍTULO Y FECHA --- */}
+        {/* --- TÍTULO Y FECHA (Sin cambios) --- */}
         <div>
           <div style={{ textAlign: "right" }}>
             <p className="cotizacion-date">
@@ -84,9 +89,8 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           </div>
         </div>
 
-        {/* --- DATOS DEL CLIENTE (Usa el objeto 'cliente' anidado) --- */}
+        {/* --- DATOS DEL CLIENTE (Sin cambios) --- */}
         <div className="cotizacion-cliente">
-          {/* --- CORRECCIÓN CLAVE --- */}
           <p>
             <strong>Señores:</strong> {formatCliente("empresa")}
           </p>
@@ -101,71 +105,72 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           </p>
         </div>
 
-        {/* --- TABLA DE ARTÍCULOS Y TOTALES --- */}
-        <table className="cotizacion-table">
-          <thead>
-            <tr>
-              <th style={{ width: "10%" }}>Item</th>
-              <th style={{ width: "10%" }}>Cantidad</th>
-              <th>Detalle</th>
-              <th style={{ width: "20%" }} className="text-right">
-                P. Unitario
-              </th>
-              <th style={{ width: "20%" }} className="text-right">
-                Total
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items && items.length > 0 ? (
-              items.map((item, index) => (
-                <tr key={item.id || index}>
-                  <td>{index + 1}</td>
-                  <td>{item.cantidad}</td>
-
-                  {/* --- CORRECCIÓN CLAVE --- */}
-                  <td>{item.descripcion}</td>
-
-                  <td className="text-right">
-                    ${formatCurrency(item.precio_unitario)}
-                  </td>
-
-                  <td className="text-right">${formatCurrency(item.total)}</td>
-                </tr>
-              ))
-            ) : (
+        {/* --- CAMBIO (2/4): WRAPPER PARA TABLA RESPONSIVA --- */}
+        <div className="cotizacion-table-responsive-wrapper">
+          <table className="cotizacion-table">
+            <thead>
               <tr>
-                <td
-                  colSpan="5"
-                  style={{ textAlign: "center", padding: "2rem" }}
-                >
-                  No se han agregado artículos a esta cotización.
-                </td>
+                <th style={{ width: "10%" }}>Item</th>
+                <th style={{ width: "10%" }}>Cantidad</th>
+                <th>Detalle</th>
+                <th style={{ width: "20%" }} className="text-right">
+                  P. Unitario
+                </th>
+                <th style={{ width: "20%" }} className="text-right">
+                  Total
+                </th>
               </tr>
-            )}
-          </tbody>
+            </thead>
+            <tbody>
+              {items && items.length > 0 ? (
+                items.map((item, index) => (
+                  <tr key={item.id || index}>
+                    <td>{index + 1}</td>
+                    <td>{item.cantidad}</td>
+                    <td>{item.descripcion}</td>
+                    <td className="text-right">
+                      ${formatCurrency(item.precio_unitario)}
+                    </td>
+                    <td className="text-right">
+                      ${formatCurrency(item.total)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    style={{ textAlign: "center", padding: "2rem" }}
+                  >
+                    No se han agregado artículos a esta cotización.
+                  </td>
+                </tr>
+              )}
+            </tbody>
 
-          {/* --- TOTALES --- */}
-          <tfoot>
-            <tr>
-              <td colSpan="3" className="summary-empty"></td>
-              <td className="summary-label">Subtotal:</td>
-              <td className="summary-value">${formatCurrency(subtotal)}</td>
-            </tr>
-            <tr>
-              <td colSpan="3" className="summary-empty"></td>
-              <td className="summary-label">IVA (19%):</td>
-              <td className="summary-value">${formatCurrency(iva)}</td>
-            </tr>
-            <tr className="total-row-final">
-              <td colSpan="3" className="summary-empty"></td>
-              <td className="summary-label">TOTAL</td>
-              <td className="summary-value">${formatCurrency(total)}</td>
-            </tr>
-          </tfoot>
-        </table>
+            {/* --- TOTALES (Sin cambios) --- */}
+            <tfoot>
+              <tr>
+                <td colSpan="3" className="summary-empty"></td>
+                <td className="summary-label">Subtotal:</td>
+                <td className="summary-value">${formatCurrency(subtotal)}</td>
+              </tr>
+              <tr>
+                <td colSpan="3" className="summary-empty"></td>
+                <td className="summary-label">IVA (19%):</td>
+                <td className="summary-value">${formatCurrency(iva)}</td>
+              </tr>
+              <tr className="total-row-final">
+                <td colSpan="3" className="summary-empty"></td>
+                <td className="summary-label">TOTAL</td>
+                <td className="summary-value">${formatCurrency(total)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        {/* --- FIN DEL WRAPPER --- */}
 
-        {/* --- PIE DE PÁGINA --- */}
+        {/* --- PIE DE PÁGINA (Sin cambios) --- */}
         <div className="cotizacion-footer-text">
           <p>Tiempo de Entrega: {tiempo_entrega}</p>
           {observaciones && (
@@ -180,8 +185,24 @@ const CotizacionA4 = ({ cotizacion, onBack, showPrintButton = true }) => {
           Cerrar
         </button>
 
+        {/* --- CAMBIO (3/4): BOTÓN DE ELIMINAR NUEVO --- */}
+        {/* Solo se muestra si la prop 'onDelete' existe */}
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            // Clases nuevas para el estilo y para mostrarlo solo en móvil
+            className="action-button danger show-on-mobile-flex"
+          >
+            Eliminar
+          </button>
+        )}
+
+        {/* --- CAMBIO (4/4): OCULTAR "IMPRIMIR" EN MÓVIL --- */}
         {showPrintButton && (
-          <button onClick={handlePrint} className="action-button">
+          <button
+            onClick={handlePrint}
+            className="action-button hide-on-mobile" // <-- Clase nueva
+          >
             Imprimir
           </button>
         )}
