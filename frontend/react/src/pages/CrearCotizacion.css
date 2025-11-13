@@ -248,6 +248,10 @@
   .page-container {
     padding: 1rem; /* Menos padding en móviles */
   }
+  
+  .page-titulo{
+    font-size: 1.75rem;
+  } 
 
   .page-header h1 {
     font-size: 1.75rem; /* Título más pequeño */
