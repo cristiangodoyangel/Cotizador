@@ -398,3 +398,22 @@
   margin-top: 1rem;
 }
 
+@media (max-width: 768px) {
+  
+  .table-responsive {
+    width: 100%;
+    
+    /* ¡LA LÍNEA MÁGICA! */
+    /* Añade un scroll horizontal SOLO a este div */
+    overflow-x: auto; 
+    
+    /* Para que el scroll sea suave en iOS */
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  /* OPCIONAL: Hacemos la letra un poco más pequeña en la tabla */
+  .data-table {
+    font-size: 0.9rem; 
+  }
+
+}
