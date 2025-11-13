@@ -57,7 +57,7 @@
 .actions-cell {
   display: flex;
   gap: 0.5rem;
-  justify-content: right;
+  justify-content: center;
   white-space: nowrap;
 }
 
@@ -89,6 +89,7 @@
   border-color: var(--color-primary);
 }
 
+/* estilos formales */
 .btn-action2:hover {
   background-color: white;
   color: var(--color-primary);
