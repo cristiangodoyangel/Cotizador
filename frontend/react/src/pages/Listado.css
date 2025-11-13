@@ -454,3 +454,20 @@
     padding: 0.5rem 0.4rem;
   }
 }
+
+/* ... al final de Listado.css, añade este media query ... */
+
+@media (max-width: 768px) {
+  
+  /* ... (tus otras clases responsive como .hide-on-mobile) ... */
+
+  .modal-content {
+    width: 98vw; /* Ocupa casi todo el ancho de la pantalla */
+    height: 95vh; /* Ocupa casi todo el alto */
+    padding: 0.5rem;
+    
+    /* ¡IMPORTANTE! 
+       Permite hacer scroll vertical DENTRO del modal */
+    overflow-y: auto; 
+  }
+}
