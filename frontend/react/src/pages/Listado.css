@@ -55,9 +55,10 @@
 }
 
 .actions-cell {
-  display: flex;
-  gap: 0.5rem;
+  display: flex;         /* <-- AÑADE ESTO */
+  gap: 0.5rem;         /* <-- AÑADE ESTO (0.5rem o 8px es un buen espacio) */
   justify-content: right;
+  white-space: nowrap; /* Evita que los botones se partan */
 }
 
 .btn-action {
