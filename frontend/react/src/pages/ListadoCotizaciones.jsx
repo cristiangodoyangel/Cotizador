@@ -21,12 +21,12 @@ const ListadoCotizaciones = () => {
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
 
-  // --- NUEVO: Estados para el modal de eliminación ---
+  // --- Estados para el modal de eliminación ---
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
-  // --- FIN NUEVO ---
+  // --- FIN ---
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -66,15 +66,17 @@ const ListadoCotizaciones = () => {
     };
   }, [modalVisible]);
 
+  // --- CORRECCIÓN (1/3): FORMATO DE MONEDA SIN DECIMALES ---
   const formatCurrency = (value) => {
-    // Verificamos si 'value' es un número válido antes de formatear
     const parsedValue = parseFloat(value);
     if (isNaN(parsedValue)) {
-      return "$0"; // O '$NaN' si prefieres, pero $0 es más limpio
+      return "$0";
     }
     return parsedValue.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
+      maximumFractionDigits: 0, // No mostrar decimales
+      minimumFractionDigits: 0,
     });
   };
 
@@ -87,26 +89,20 @@ const ListadoCotizaciones = () => {
             ?.toString()
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          /* --- MODIFICADO (1/4): Leer del objeto anidado 'cliente' --- */
           item.cliente?.empresa
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
           item.cliente?.nombre_contacto
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          /* --- FIN MODIFICADO --- */
-
           item.asunto?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     if (sortConfig.key) {
-      // --- NOTA: El sortConfig necesitará un ajuste más profundo
-      // --- para ordenar por campos anidados. Por ahora, lo dejamos así.
       filteredItems.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
 
-        // --- MODIFICADO (Opcional): Lógica básica para ordenar por cliente ---
         if (sortConfig.key === "cliente_empresa") {
           aValue = a.cliente?.empresa || a.cliente?.nombre_contacto;
           bValue = b.cliente?.empresa || b.cliente?.nombre_contacto;
@@ -151,7 +147,7 @@ const ListadoCotizaciones = () => {
     setSortConfig({ key, direction });
   };
 
-  // ... (lógica de eliminación sin cambios) ...
+  // --- Lógica de eliminación (sin cambios) ---
   const openDeleteConfirmModal = (cotizacionId) => {
     const quote = cotizaciones.find((c) => c.id === cotizacionId);
     setQuoteToDelete(quote);
@@ -182,19 +178,13 @@ const ListadoCotizaciones = () => {
     }
   };
 
-  /* --- MODIFICADO (2/4): 'handleVerPdf' ahora es mucho más simple --- */
+  // --- Lógica de ver PDF (sin cambios) ---
   const handleVerPdf = async (cotizacionId) => {
     setModalVisible(true);
     setLoadingModal(true);
     setSelectedCotizacion(null);
     try {
-      // La 'cotizacionData' que recibimos de la API
-      // ya tiene la estructura anidada correcta (cliente: {}, items: [])
-      // gracias a nuestros nuevos Serializers de Django.
       const cotizacionData = await obtenerCotizacion(cotizacionId);
-
-      // Ya no necesitamos construir 'cotizacionParaVista'.
-      // Simplemente usamos la data tal como viene.
       setSelectedCotizacion(cotizacionData);
     } catch (err) {
       alert("Error al cargar la cotización: " + err.message);
@@ -203,9 +193,20 @@ const ListadoCotizaciones = () => {
       setLoadingModal(false);
     }
   };
-  /* --- FIN MODIFICADO --- */
 
   const closeModal = () => setModalVisible(false);
+
+  // --- CORRECCIÓN (2/3): NUEVA FUNCIÓN PARA ELIMINAR DESDE MODAL ---
+  const handleDeleteFromModal = () => {
+    // 1. Cierra el modal actual (el del PDF)
+    closeModal();
+
+    // 2. Abre el modal de confirmación de borrado
+    if (selectedCotizacion) {
+      openDeleteConfirmModal(selectedCotizacion.id);
+    }
+  };
+  // --- FIN DE LA CORRECCIÓN ---
 
   return (
     <div className="page-container">
@@ -228,9 +229,9 @@ const ListadoCotizaciones = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.25"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.25" // Corregido stroke-width a strokeWidth
+                strokeLinecap="round" // Corregido stroke-linecap a strokeLinecap
+                strokeLinejoin="round" // Corregido stroke-linejoin a strokeLinejoin
                 className="icon-tabler icon-tabler-search"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -250,6 +251,7 @@ const ListadoCotizaciones = () => {
           <div className="card">
             <div className="table-responsive">
               <table className="data-table">
+                {/* TU CÓDIGO '<thead>' CON 'hide-on-mobile' (SIN CAMBIOS) */}
                 <thead>
                   <tr>
                     <th onClick={() => requestSort("numero")}>
@@ -262,7 +264,6 @@ const ListadoCotizaciones = () => {
                       {sortConfig.key === "fecha" &&
                         (sortConfig.direction === "ascending" ? "↑" : "↓")}
                     </th>
-                    {/* Hacemos clic en 'cliente_empresa' para ordenar */}
                     <th onClick={() => requestSort("cliente_empresa")}>
                       Cliente{" "}
                       {sortConfig.key === "cliente_empresa" &&
@@ -280,6 +281,7 @@ const ListadoCotizaciones = () => {
                     <th className="hide-on-mobile"></th>
                   </tr>
                 </thead>
+                {/* TU CÓDIGO '<tbody>' CON 'clickable-id' Y 'hide-on-mobile' (SIN CAMBIOS) */}
                 <tbody>
                   {currentItems.length > 0 ? (
                     currentItems.map((cot) => (
@@ -293,14 +295,11 @@ const ListadoCotizaciones = () => {
                         <td>
                           {new Date(cot.fecha).toLocaleDateString("es-CL")}
                         </td>
-
-                        {/* --- MODIFICADO (3/4): Leer del objeto anidado 'cliente' --- */}
                         <td>
                           {cot.cliente?.empresa ||
                             cot.cliente?.nombre_contacto ||
                             "Cliente no disponible"}
                         </td>
-
                         <td className="hide-on-mobile">{cot.asunto}</td>
                         <td className="hide-on-mobile">
                           {formatCurrency(cot.total)}
@@ -331,7 +330,7 @@ const ListadoCotizaciones = () => {
                 </tbody>
               </table>
             </div>
-            {/* ... (tu paginación) ... */}
+            {/* PAGINACIÓN (SIN CAMBIOS) */}
             {totalPages > 1 && (
               <div className="pagination">
                 <button
@@ -365,6 +364,7 @@ const ListadoCotizaciones = () => {
         </>
       )}
 
+      {/* --- MODAL DE VER PDF --- */}
       {modalVisible && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -378,13 +378,16 @@ const ListadoCotizaciones = () => {
                 <CotizacionA4
                   cotizacion={selectedCotizacion}
                   onBack={closeModal}
+                  // --- CORRECCIÓN (3/3): PASAR LA PROP AL HIJO ---
+                  onDelete={handleDeleteFromModal}
                 />
               )
             )}
           </div>
         </div>
       )}
-      {/* --- NUEVO: Modal de Confirmación de Eliminación --- */}
+
+      {/* --- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN (SIN CAMBIOS) --- */}
       {isDeleteModalOpen && (
         <div className="modal-overlay" onClick={closeDeleteModal}>
           <div
@@ -398,7 +401,6 @@ const ListadoCotizaciones = () => {
             <p>
               ¿Estás seguro de que deseas eliminar la cotización{" "}
               <strong>#{quoteToDelete?.numero}</strong> (Cliente:{" "}
-              {/* --- MODIFICADO (4/4): Leer del objeto anidado 'cliente' --- */}
               <strong>
                 {quoteToDelete?.cliente?.empresa ||
                   quoteToDelete?.cliente?.nombre_contacto}
@@ -428,7 +430,6 @@ const ListadoCotizaciones = () => {
           </div>
         </div>
       )}
-      {/* --- FIN NUEVO --- */}
     </div>
   );
 };
