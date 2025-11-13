@@ -199,10 +199,7 @@ const CotizacionA4 = ({
 
         {/* --- CAMBIO (4/4): OCULTAR "IMPRIMIR" EN MÓVIL --- */}
         {showPrintButton && (
-          <button
-            onClick={handlePrint}
-            className="action-button hide-on-mobile" // <-- Clase nueva
-          >
+          <button onClick={handlePrint} className="action-button">
             Imprimir
           </button>
         )}
