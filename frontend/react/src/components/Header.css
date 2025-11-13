@@ -41,7 +41,7 @@
 @media (max-width: 760px) {
   .app-header {
     flex-direction: column;
-    align-items: center; /* Alinea a la izquierda en pantallas pequeñas */
+    align-items: flex-start; /* Alinea a la izquierda en pantallas pequeñas */
   }
   
   .app-header nav ul {

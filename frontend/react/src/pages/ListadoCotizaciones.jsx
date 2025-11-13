@@ -277,7 +277,7 @@ const ListadoCotizaciones = () => {
                       {sortConfig.key === "total" &&
                         (sortConfig.direction === "ascending" ? "↑" : "↓")}
                     </th>
-                    <th>Acciones</th>
+                    <th className="hide-on-mobile"></th>
                   </tr>
                 </thead>
                 <tbody>
