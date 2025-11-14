@@ -208,25 +208,3 @@
   Pega esto al final de tu archivo CotizacionA4.css
 */
 
-@media (max-width: 768px) {
-
- 
-
-  /* --- ¡LA CORRECCIÓN DE CSS QUE ARREGLA LA ALINEACIÓN! --- */
-  .cotizacion-actions {
-    display: flex;
-    flex-direction: row; /* Siempre en fila horizontal */
-    flex-wrap: nowrap; /* ¡Impide que se apilen! */
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-
-  .cotizacion-actions .action-button {
-    flex-grow: 1; /* Crecen para ocupar el espacio */
-    flex-basis: 0;
-    margin: 0;
-    min-width: auto;
-    white-space: nowrap; /* Para que "Descargar PDF" no se parta */
-  }
-}
