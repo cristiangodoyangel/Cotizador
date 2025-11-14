@@ -236,7 +236,7 @@ const CotizacionA4 = ({
         {onDelete && (
           <button
             onClick={onDelete}
-            className="action-button danger show-on-mobile-flex"
+            className="action-button danger show-on-mobile"
           >
             Eliminar
           </button>
@@ -254,7 +254,7 @@ const CotizacionA4 = ({
         {showPrintButton && (
           <button
             onClick={handlePrint}
-            className="action-button show-on-mobile-flex"
+            className="action-button show-on-mobile"
           >
             Descargar PDF
           </button>
