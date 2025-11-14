@@ -248,7 +248,7 @@ const CotizacionA4 = ({
             onClick={handlePrint}
             className="action-button hide-on-mobile"
           >
-            Imprimir
+            Imprim1ir
           </button>
         )}
 

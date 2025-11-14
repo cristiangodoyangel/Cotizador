@@ -309,7 +309,7 @@ const ListadoCotizaciones = () => {
                             onClick={() => handleVerPdf(cot.id)}
                             className="btn-action"
                           >
-                            VER COTIZACIÓN
+                            VER
                           </button>
                           <button
                             onClick={() => openDeleteConfirmModal(cot.id)}
