@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import "./CotizacionA4.css";
 import logo from "../assets/img/logo.png"; // Asumiendo que la ruta es correcta
 
-// --- ¡NUEVAS IMPORTACIONES! ---
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -12,63 +11,64 @@ const CotizacionA4 = ({
   onDelete,
   showPrintButton = true,
 }) => {
-  // --- 1. AÑADIMOS UNA REFERENCIA AL DIV A4 ---
   const printRef = useRef();
 
-  // --- 2. REEMPLAZAMOS EL 'handlePrint' ---
+  // --- ¡AQUÍ ESTÁ LA FUNCIÓN 'handlePrint' CORREGIDA! ---
   const handlePrint = () => {
-    const input = printRef.current; // Este es el <div className="cotizacion-a4">
+    const input = printRef.current; // El div .cotizacion-a4
     if (!input) return;
 
-    // Ocultamos los botones ANTES de tomar la "foto"
     const actions = input.querySelector(".cotizacion-actions");
+
+    // --- 1. Guardamos los estilos originales del modal ---
+    const originalWidth = input.style.width;
+    const originalMinHeight = input.style.minHeight;
     if (actions) {
       actions.style.display = "none";
     }
 
+    // --- 2. FORZAMOS EL TAMAÑO A4 ANTES DE LA FOTO ---
+    // Esto anula temporalmente el CSS responsivo (@media)
+    input.style.width = "210mm";
+    input.style.minHeight = "297mm";
+
     html2canvas(input, {
-      scale: 2, // Mayor escala para mejor calidad de imagen
+      scale: 2, // Mejor calidad
       useCORS: true,
+      // Le decimos a html2canvas que capture el contenido completo,
+      // aunque se salga de la pantalla del móvil.
+      windowWidth: input.scrollWidth,
+      windowHeight: input.scrollHeight,
     }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
 
       // Creamos el PDF en formato A4 (210mm x 297mm)
-      const pdf = new jsPDF("p", "mm", "a4"); // 'p' = portrait (vertical)
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
 
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
+      // Calculamos la proporción para que la "foto" quepa en el ancho A4
+      const ratio = pdfWidth / canvas.width;
+      const imgHeight = canvas.height * ratio;
 
-      // Calculamos la proporción para que la "foto" quepa en la hoja A4
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      // Añadimos la imagen al PDF
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, imgHeight);
 
-      // Centramos la imagen en la hoja A4
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0; // Empezamos desde arriba
-
-      pdf.addImage(
-        imgData,
-        "PNG",
-        imgX,
-        imgY,
-        imgWidth * ratio,
-        imgHeight * ratio
-      );
-
-      // Volvemos a mostrar los botones después de tomar la "foto"
+      // --- 3. RESTAURAMOS LOS ESTILOS ORIGINALES ---
+      // Devolvemos el modal a su estado responsivo
       if (actions) {
-        actions.style.display = "flex"; // (O el display que tuviera antes)
+        actions.style.display = "flex";
       }
+      input.style.width = originalWidth;
+      input.style.minHeight = originalMinHeight;
 
-      // --- 3. ¡LA SOLUCIÓN! ---
-      // Forzamos la descarga del archivo con el nombre correcto.
+      // --- 4. Forzamos la descarga con el nombre correcto ---
       pdf.save(`COTIZACIÓN N° ${cotizacion.numero}.pdf`);
     });
   };
-  // --- FIN DE LA NUEVA FUNCIÓN ---
+  // --- FIN DE LA FUNCIÓN CORREGIDA ---
 
   if (!cotizacion) {
+    // (El resto del componente se queda igual)
     return (
       <div className="cotizacion-a4">
         <p>Cargando datos de la cotización...</p>
@@ -76,7 +76,6 @@ const CotizacionA4 = ({
     );
   }
 
-  // (El resto de tu código de desestructuración y formatCurrency se mantiene igual)
   const {
     cliente,
     empresa,
@@ -105,7 +104,6 @@ const CotizacionA4 = ({
   };
 
   return (
-    // --- 4. AÑADIMOS LA 'ref' AL DIV PRINCIPAL ---
     <div className="cotizacion-a4" ref={printRef}>
       <div className="cotizacion-content">
         {/* --- ENCABEZADO (Sin cambios) --- */}
@@ -228,14 +226,13 @@ const CotizacionA4 = ({
         </div>
       </div>
 
-      {/* --- BOTONES DE ACCIÓN (CORREGIDOS) --- */}
+      {/* --- BOTONES DE ACCIÓN (Corregidos) --- */}
+      {/* (Este es el código de tu mensaje anterior, que restaura ambos botones) */}
       <div className="cotizacion-actions">
-        {/* 1. Botón Cerrar (Siempre visible) */}
         <button onClick={onBack} className="action-button secondary">
           Cerrar
         </button>
 
-        {/* 2. Botón Eliminar (Solo en móvil) */}
         {onDelete && (
           <button
             onClick={onDelete}
@@ -245,7 +242,6 @@ const CotizacionA4 = ({
           </button>
         )}
 
-        {/* 3. Botón Descargar (Solo en escritorio) */}
         {showPrintButton && (
           <button
             onClick={handlePrint}
@@ -255,7 +251,6 @@ const CotizacionA4 = ({
           </button>
         )}
 
-        {/* 4. BOTÓN DESCARGAR (SOLO EN MÓVIL) --- ¡ESTE ES EL QUE RESTAURAMOS! --- */}
         {showPrintButton && (
           <button
             onClick={handlePrint}
