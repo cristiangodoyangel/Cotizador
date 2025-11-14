@@ -251,17 +251,6 @@ const CotizacionA4 = ({
             Descargar PDF
           </button>
         )}
-
-        {/* --- BOTÓN IMPRIMIR PARA MÓVIL --- */}
-        {/* (El 'handlePrint' ahora funciona en móvil) */}
-        {showPrintButton && (
-          <button
-            onClick={handlePrint}
-            className="action-button show-on-mobile-flex"
-          >
-            Descargar PDF
-          </button>
-        )}
       </div>
     </div>
   );
