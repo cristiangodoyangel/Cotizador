@@ -1,20 +1,72 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./CotizacionA4.css";
 import logo from "../assets/img/logo.png"; // Asumiendo que la ruta es correcta
 
-// --- CAMBIO (1/4): Acepta la nueva prop 'onDelete' ---
+// --- ¡NUEVAS IMPORTACIONES! ---
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
+
 const CotizacionA4 = ({
   cotizacion,
   onBack,
-  onDelete, // <-- Prop nueva
+  onDelete,
   showPrintButton = true,
 }) => {
+  // --- 1. AÑADIMOS UNA REFERENCIA AL DIV A4 ---
+  const printRef = useRef();
+
+  // --- 2. REEMPLAZAMOS EL 'handlePrint' ---
   const handlePrint = () => {
-    const originalTitle = document.title;
-    document.title = `COTIZACIÓN N° ${cotizacion.numero}`;
-    window.print();
-    document.title = originalTitle;
+    const input = printRef.current; // Este es el <div className="cotizacion-a4">
+    if (!input) return;
+
+    // Ocultamos los botones ANTES de tomar la "foto"
+    const actions = input.querySelector(".cotizacion-actions");
+    if (actions) {
+      actions.style.display = "none";
+    }
+
+    html2canvas(input, {
+      scale: 2, // Mayor escala para mejor calidad de imagen
+      useCORS: true,
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+
+      // Creamos el PDF en formato A4 (210mm x 297mm)
+      const pdf = new jsPDF("p", "mm", "a4"); // 'p' = portrait (vertical)
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      // Calculamos la proporción para que la "foto" quepa en la hoja A4
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+
+      // Centramos la imagen en la hoja A4
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 0; // Empezamos desde arriba
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+
+      // Volvemos a mostrar los botones después de tomar la "foto"
+      if (actions) {
+        actions.style.display = "flex"; // (O el display que tuviera antes)
+      }
+
+      // --- 3. ¡LA SOLUCIÓN! ---
+      // Forzamos la descarga del archivo con el nombre correcto.
+      pdf.save(`COTIZACIÓN N° ${cotizacion.numero}.pdf`);
+    });
   };
+  // --- FIN DE LA NUEVA FUNCIÓN ---
 
   if (!cotizacion) {
     return (
@@ -24,7 +76,7 @@ const CotizacionA4 = ({
     );
   }
 
-  // Desestructuramos los datos
+  // (El resto de tu código de desestructuración y formatCurrency se mantiene igual)
   const {
     cliente,
     empresa,
@@ -38,11 +90,9 @@ const CotizacionA4 = ({
     observaciones,
   } = cotizacion;
 
-  // --- Funciones seguras para formatear ---
   const formatCliente = (field) => cliente?.[field] || "N/A";
   const formatEmpresa = (field) => empresa?.[field] || "N/A";
 
-  // (Tu función 'formatCurrency' ya estaba correcta para no mostrar decimales)
   const formatCurrency = (value) => {
     const parsedValue = parseFloat(value);
     if (isNaN(parsedValue)) {
@@ -55,7 +105,8 @@ const CotizacionA4 = ({
   };
 
   return (
-    <div className="cotizacion-a4">
+    // --- 4. AÑADIMOS LA 'ref' AL DIV PRINCIPAL ---
+    <div className="cotizacion-a4" ref={printRef}>
       <div className="cotizacion-content">
         {/* --- ENCABEZADO (Sin cambios) --- */}
         <div className="cotizacion-header">
@@ -105,7 +156,7 @@ const CotizacionA4 = ({
           </p>
         </div>
 
-        {/* --- CAMBIO (2/4): WRAPPER PARA TABLA RESPONSIVA --- */}
+        {/* --- WRAPPER DE TABLA (Sin cambios) --- */}
         <div className="cotizacion-table-responsive-wrapper">
           <table className="cotizacion-table">
             <thead>
@@ -147,7 +198,6 @@ const CotizacionA4 = ({
                 </tr>
               )}
             </tbody>
-
             {/* --- TOTALES (Sin cambios) --- */}
             <tfoot>
               <tr>
@@ -168,7 +218,6 @@ const CotizacionA4 = ({
             </tfoot>
           </table>
         </div>
-        {/* --- FIN DEL WRAPPER --- */}
 
         {/* --- PIE DE PÁGINA (Sin cambios) --- */}
         <div className="cotizacion-footer-text">
@@ -179,28 +228,38 @@ const CotizacionA4 = ({
         </div>
       </div>
 
-      {/* --- BOTONES DE ACCIÓN --- */}
+      {/* --- BOTONES DE ACCIÓN (Tu código anterior estaba bien) --- */}
       <div className="cotizacion-actions">
         <button onClick={onBack} className="action-button secondary">
           Cerrar
         </button>
 
-        {/* --- CAMBIO (4/4): OCULTAR "IMPRIMIR" EN MÓVIL --- */}
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="action-button danger show-on-mobile-flex"
+          >
+            Eliminar
+          </button>
+        )}
+
         {showPrintButton && (
-          <button onClick={handlePrint} className="action-button">
+          <button
+            onClick={handlePrint}
+            className="action-button hide-on-mobile"
+          >
             Imprimir
           </button>
         )}
 
-        {/* --- CAMBIO (3/4): BOTÓN DE ELIMINAR NUEVO --- */}
-        {/* Solo se muestra si la prop 'onDelete' existe */}
-        {onDelete && (
+        {/* --- BOTÓN IMPRIMIR PARA MÓVIL --- */}
+        {/* (El 'handlePrint' ahora funciona en móvil) */}
+        {showPrintButton && (
           <button
-            onClick={onDelete}
-            // Clases nuevas para el estilo y para mostrarlo solo en móvil
-            className="action-button danger show-on-mobile-flex"
+            onClick={handlePrint}
+            className="action-button show-on-mobile-flex"
           >
-            Eliminar
+            Descargar PDF
           </button>
         )}
       </div>
