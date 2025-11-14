@@ -204,3 +204,50 @@
   EL BLOQUE @media print FUE ELIMINADO DE AQUÍ 
   PARA EVITAR CONFLICTOS.
 */
+/*
+  Pega esto al final de tu archivo CotizacionA4.css
+*/
+
+@media (max-width: 768px) {
+
+  /* (Reglas que ya teníamos para el modal responsivo) */
+  .cotizacion-a4 {
+    width: 100%;
+    min-height: 0;
+    padding: 0.5rem;
+    box-shadow: none;
+    border: none;
+    font-size: 0.9rem;
+  }
+  .cotizacion-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .cotizacion-company-info {
+    margin-top: 1rem;
+  }
+  .cotizacion-table-responsive-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* --- ¡LA CORRECCIÓN DE CSS QUE ARREGLA LA ALINEACIÓN! --- */
+  .cotizacion-actions {
+    display: flex;
+    flex-direction: row; /* Siempre en fila horizontal */
+    flex-wrap: nowrap; /* ¡Impide que se apilen! */
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .cotizacion-actions .action-button {
+    flex-grow: 1; /* Crecen para ocupar el espacio */
+    flex-basis: 0;
+    margin: 0;
+    min-width: auto;
+    white-space: nowrap; /* Para que "Descargar PDF" no se parta */
+  }
+}

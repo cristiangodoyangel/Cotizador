@@ -228,12 +228,14 @@ const CotizacionA4 = ({
         </div>
       </div>
 
-      {/* --- BOTONES DE ACCIÓN (Tu código anterior estaba bien) --- */}
+      {/* --- BOTONES DE ACCIÓN (CORREGIDOS) --- */}
       <div className="cotizacion-actions">
+        {/* 1. Botón Cerrar (Siempre visible) */}
         <button onClick={onBack} className="action-button secondary">
           Cerrar
         </button>
 
+        {/* 2. Botón Eliminar (Solo en móvil) */}
         {onDelete && (
           <button
             onClick={onDelete}
@@ -243,10 +245,21 @@ const CotizacionA4 = ({
           </button>
         )}
 
+        {/* 3. Botón Descargar (Solo en escritorio) */}
         {showPrintButton && (
           <button
             onClick={handlePrint}
             className="action-button hide-on-mobile"
+          >
+            Descargar PDF
+          </button>
+        )}
+
+        {/* 4. BOTÓN DESCARGAR (SOLO EN MÓVIL) --- ¡ESTE ES EL QUE RESTAURAMOS! --- */}
+        {showPrintButton && (
+          <button
+            onClick={handlePrint}
+            className="action-button show-on-mobile-flex"
           >
             Descargar PDF
           </button>
