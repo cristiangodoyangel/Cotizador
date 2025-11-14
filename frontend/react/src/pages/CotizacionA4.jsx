@@ -1,7 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react"; // <-- CAMBIO 1: Importar useEffect
 import "./CotizacionA4.css";
 import logo from "../assets/img/logo.png"; // Asumiendo que la ruta es correcta
 
+// --- ¡NUEVAS IMPORTACIONES! ---
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -13,62 +14,64 @@ const CotizacionA4 = ({
 }) => {
   const printRef = useRef();
 
-  // --- ¡AQUÍ ESTÁ LA FUNCIÓN 'handlePrint' CORREGIDA! ---
+  // --- CAMBIO 2: Añadimos useEffect para aplicar el "truco" ---
+  useEffect(() => {
+    // Esta es la "lógica que ya funciona" que descubriste.
+    // La aplicamos en cuanto se carga el modal para que
+    // los botones se vean bien desde el inicio.
+    if (printRef.current) {
+      const actions = printRef.current.querySelector(".cotizacion-actions");
+      if (actions) {
+        // Esto anula cualquier CSS conflictivo y fuerza la fila
+        actions.style.display = "flex";
+      }
+    }
+  }, []); // El array vacío [] asegura que se ejecute solo una vez
+
+  // --- Tu función handlePrint se queda igual ---
   const handlePrint = () => {
-    const input = printRef.current; // El div .cotizacion-a4
+    const input = printRef.current;
     if (!input) return;
 
     const actions = input.querySelector(".cotizacion-actions");
 
-    // --- 1. Guardamos los estilos originales del modal ---
     const originalWidth = input.style.width;
     const originalMinHeight = input.style.minHeight;
     if (actions) {
       actions.style.display = "none";
     }
 
-    // --- 2. FORZAMOS EL TAMAÑO A4 ANTES DE LA FOTO ---
-    // Esto anula temporalmente el CSS responsivo (@media)
     input.style.width = "210mm";
     input.style.minHeight = "297mm";
 
     html2canvas(input, {
-      scale: 2, // Mejor calidad
+      scale: 2,
       useCORS: true,
-      // Le decimos a html2canvas que capture el contenido completo,
-      // aunque se salga de la pantalla del móvil.
       windowWidth: input.scrollWidth,
       windowHeight: input.scrollHeight,
     }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
 
-      // Creamos el PDF en formato A4 (210mm x 297mm)
       const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pdfWidth = pdf.internal.pageSize.getWidth();
 
-      // Calculamos la proporción para que la "foto" quepa en el ancho A4
       const ratio = pdfWidth / canvas.width;
       const imgHeight = canvas.height * ratio;
 
-      // Añadimos la imagen al PDF
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, imgHeight);
 
-      // --- 3. RESTAURAMOS LOS ESTILOS ORIGINALES ---
-      // Devolvemos el modal a su estado responsivo
+      // Aquí es donde el estilo se volvía a aplicar "accidentalmente"
       if (actions) {
         actions.style.display = "flex";
       }
       input.style.width = originalWidth;
       input.style.minHeight = originalMinHeight;
 
-      // --- 4. Forzamos la descarga con el nombre correcto ---
       pdf.save(`COTIZACIÓN N° ${cotizacion.numero}.pdf`);
     });
   };
-  // --- FIN DE LA FUNCIÓN CORREGIDA ---
 
   if (!cotizacion) {
-    // (El resto del componente se queda igual)
     return (
       <div className="cotizacion-a4">
         <p>Cargando datos de la cotización...</p>
@@ -76,6 +79,7 @@ const CotizacionA4 = ({
     );
   }
 
+  // (El resto de tu código de desestructuración y formatCurrency se mantiene igual)
   const {
     cliente,
     empresa,
@@ -236,7 +240,7 @@ const CotizacionA4 = ({
         {onDelete && (
           <button
             onClick={onDelete}
-            className="action-button danger show-on-mobile"
+            className="action-button danger show-on-mobile-flex"
           >
             Eliminar
           </button>
@@ -254,7 +258,7 @@ const CotizacionA4 = ({
         {showPrintButton && (
           <button
             onClick={handlePrint}
-            className="action-button show-on-mobile"
+            className="action-button show-on-mobile-flex"
           >
             Descargar PDF
           </button>
