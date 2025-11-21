@@ -8,7 +8,7 @@
 }
 
 .home-form h2, .home-form h3 {
-  color: #103b52;
+  color: #818181;
 }
 
 .home-form .item-form {
@@ -26,7 +26,7 @@
 }
 
 .home-form button {
-  background-color: #103b52;
+  background-color: #000000;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
