@@ -19,10 +19,10 @@ body {
 
 
 :root {
-  --color-primary: #383838;
-  --color-primary-hover: #e9ecef; 
+  --color-primary: #818181;
+  --color-primary-hover: #000000; 
   --color-background: #ffffff;
-  --color-text: #343a40;
+  --color-text: #000000;
   --color-border: #dee2e6;
 }
 
