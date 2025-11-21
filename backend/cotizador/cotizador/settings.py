@@ -209,11 +209,4 @@ import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Company configuration
-COMPANY_INFO = {
-    'name': 'Yajasa Technology',
-    'rut': '77.182.974-0',
-    'address': 'Uribe 636 of 707, C. de Negocios, Antofagasta',
-    'phone': '+569-42920058',
-    'email': 'Yajasa.technology@gmail.com',
-}
+
