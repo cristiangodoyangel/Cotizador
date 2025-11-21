@@ -8,26 +8,19 @@ import { Routes, Route } from "react-router-dom"; // Sin BrowserRouter aquí
 import Login from "./pages/Login";
 import ListadoCotizaciones from "./pages/ListadoCotizaciones";
 import CrearCotizacion from "./pages/CrearCotizacion";
-import ListadoClientes from "./pages/ListadoClientes"; // (Lo vi en tu código original)
+import ListadoClientes from "./pages/ListadoClientes";
 
 // Tus Componentes de Estructura
 import ProtectedRoute from "./components/ProtectedRoute";
-import MainLayout from "./components/MainLayout"; // ¡El "molde" que acabamos de hacer!
+import MainLayout from "./components/MainLayout";
 
 function App() {
   return (
     <Routes>
-      {/* Ruta 1: PÚBLICA (Sin Header/Footer) */}
       <Route path="/login" element={<Login />} />
 
-      {/* Ruta 2: PRIVADA (Con Header/Footer) */}
       <Route element={<ProtectedRoute />}>
-        {" "}
-        {/* 1. Revisa si hay sesión */}
         <Route element={<MainLayout />}>
-          {" "}
-          {/* 2. Si sí, aplica el molde (Header/Footer) */}
-          {/* 3. Renderiza estas páginas DENTRO del molde */}
           <Route path="/" element={<ListadoCotizaciones />} />
           <Route path="/crear-cotizacion" element={<CrearCotizacion />} />
           <Route path="/cotizaciones" element={<ListadoCotizaciones />} />
