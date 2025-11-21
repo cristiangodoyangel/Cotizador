@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import "./CotizacionA4.css";
-import logo from "../assets/img/logo.png";
+import logo from "../assets/img/logo.webp";
 
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
