@@ -1,4 +1,3 @@
-/* --- Estilos base (Tu código original) --- */
 .controls-container {
   margin-bottom: 1rem;
   display: flex;
@@ -89,14 +88,12 @@
   border-color: var(--color-primary);
 }
 
-/* estilos formales */
 .btn-action2:hover {
   background-color: white;
   color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
-/* (Tu estilo original .btn-danger, sobrescrito más abajo) */
 .btn-action.btn-danger {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: #0c0256;
@@ -219,7 +216,6 @@
   z-index: 1010;
 }
 
-/* --- Estilos de Impresión (Tu código original) --- */
 @media print {
   @page {
     margin: 0;
@@ -282,7 +278,6 @@
   }
 }
 
-/* --- Modal de Eliminación (Tu código original) --- */
 .delete-modal-content {
   max-width: 500px;
   padding: 2rem;
@@ -339,7 +334,6 @@
   margin-top: 1rem;
 }
 
-/* --- ID Clickeable (Tu código original) --- */
 .clickable-id {
   font-weight: bold;
   color: var(--color-primary);
@@ -352,10 +346,6 @@
   background-color: #f4f4f4;
 }
 
-/* * --- INICIO DE NUEVOS ESTILOS RESPONSIVOS ---
- */
-
-/* (Botón de eliminar en el modal) */
 .action-button.danger {
   background-color: #dc3545; /* Rojo de "peligro" */
   color: white;
@@ -366,39 +356,27 @@
   border-color: #bd2130;
 }
 
-/* (Por defecto, en escritorio, está oculto) */
 .show-on-mobile-flex {
   display: none;
 }
 
-/* (Clase para ocultar en móvil, ya la tenías) */
-.hide-on-mobile {
-  /* Se muestra por defecto */
-}
-
-/* --- BLOQUE RESPONSIVO CONSOLIDADO --- */
-/* Aplicado a pantallas de 768px o menos */
 @media (max-width: 768px) {
   
-  /* (De tu 1er bloque) */
   .table-responsive {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* (De tu 2do y 3er bloque, consolidados) */
   .data-table {
     font-size: 0.9rem;
   }
 
-  /* (De tu 2do bloque) */
   .data-table th,
   .data-table td {
     padding: 0.5rem 0.4rem;
   }
 
-  /* (De tu 3er bloque) */
   .modal-content {
     width: 98vw;
     height: 95vh;
@@ -406,17 +384,15 @@
     overflow-y: auto;
   }
   
-  /* (De tu 2do bloque) */
   .hide-on-mobile {
     display: none;
   }
 
-  /* (NUEVO: Para mostrar el botón de eliminar en modal móvil) */
   .show-on-mobile-flex {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-grow: 1; /* Opcional: hace que ocupe más espacio */
+    flex-grow: 1;
   }
 
   .page-header h1.page-titulo {
@@ -428,5 +404,3 @@
   }
 
 }
-/* * --- FIN DE NUEVOS ESTILOS RESPONSIVOS ---
- */

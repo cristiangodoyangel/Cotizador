@@ -1,4 +1,4 @@
-/* --- Estilos base (Tu código original sin cambios) --- */
+
 .page-container {
   width: 100%;
   max-width: 1100px;
@@ -84,47 +84,42 @@
   gap: 1.5rem;
 }
 
-/* // ====================================================================
-// --- INICIO DE LA CORRECCIÓN CSS DE ARTÍCULOS ---
-// ====================================================================
-*/
 
-/* --- Wrapper para cada campo de item (label + input) --- */
 .form-group-item {
   display: flex;
   flex-direction: column;
 }
 
-/* --- Labels de los items (Ocultos en desktop, visibles en móvil) --- */
+
 .form-group-item label {
-  display: none; /* Oculto en desktop por defecto */
+  display: none;
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
   color: #495057;
 }
 
-/* --- Input de los items --- */
+
 .form-group-item input {
   width: 100%;
-  padding: 0.75rem; /* Padding consistente con el resto del form */
+  padding: 0.75rem; 
   border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 1rem;
   box-sizing: border-box;
 }
 
-/* --- Tabla de Items (Contenedor) --- */
+
 .items-table {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* --- Cabecera de Items (Solo Desktop) --- */
+
 .items-header {
   display: grid;
-  grid-template-columns: 100px 3fr 1fr 1fr 40px; /* Tu grid original */
+  grid-template-columns: 100px 3fr 1fr 1fr 40px; 
   gap: 1rem;
   align-items: center;
   font-weight: 600;
@@ -134,32 +129,30 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-/* --- Fila de Item (Desktop) --- */
+
 .item-row {
   display: grid;
-  grid-template-columns: 100px 3fr 1fr 1fr 40px; /* Tu grid original */
+  grid-template-columns: 100px 3fr 1fr 1fr 40px; 
   gap: 1rem;
-  align-items: flex-end; /* Alinea los inputs con el botón */
+  align-items: flex-end;
 }
 
-/* --- Asignamos los nuevos divs al grid de ESCRITORIO --- */
-/* (Esto ignora el orden del HTML y usa el grid) */
 .item-row .item-cantidad    { grid-column: 1 / 2; }
 .item-row .item-descripcion { grid-column: 2 / 3; }
 .item-row .item-precio      { grid-column: 3 / 4; }
 .item-row .item-total       { grid-column: 4 / 5; }
 .item-row .item-row-button  { grid-column: 5 / 6; }
 
-/* Botón de eliminar (Estilo de Escritorio) */
+
 .delete-item-btn {
   background: none;
-  border: 1px solid #dc3545; /* Borde rojo */
+  border: 1px solid #dc3545; 
   color: #dc3545;
   cursor: pointer;
   font-size: 1rem;
   border-radius: 4px;
   width: 40px;
-  height: 40px; /* Altura fija para alinear */
+  height: 40px; 
   transition: all 0.2s ease;
 }
 .delete-item-btn:hover {
@@ -177,13 +170,7 @@
   padding: 0.5rem;
 }
 
-/* // ====================================================================
-// --- FIN DE LA CORRECCIÓN CSS DE ARTÍCULOS ---
-// ====================================================================
-*/
 
-
-/* --- Sección de Resumen (Tu código original sin cambios) --- */
 .summary-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -220,7 +207,7 @@
   padding-top: 1rem;
 }
 
-/* --- Acciones de Formulario (Tu código original sin cambios) --- */
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -254,10 +241,7 @@
 }
 
 
-/* // ====================================================================
-// --- INICIO DE LA CORRECCIÓN RESPONSIVE ---
-// ====================================================================
-*/
+
 @media (max-width: 768px) {
   .page-container {
     padding: 1rem;
@@ -276,63 +260,60 @@
     padding: 1rem;
   }
 
-  /* --- INSTRUCCIÓN CLAVE: "flex column" en Responsive --- */
+
   
   .items-table {
-    overflow-x: unset; /* Ya no necesitamos scroll horizontal */
-  }
+    overflow-x: unset;
 
   .items-header {
-    display: none; /* Ocultamos la cabecera en móvil (ya lo tenías) */
+    display: none; 
   }
 
   .item-row {
-    /* ¡Tu solicitud! Flex Column */
+
     display: flex;
     flex-direction: column; 
-    align-items: stretch; /* Ocupan todo el ancho */
-    gap: 0.75rem; /* Espacio entre cada campo */
+    align-items: stretch; 
+    gap: 0.75rem; 
     
-    /* Mantenemos el estilo de "tarjeta" que tenías */
+
     padding: 1rem;
     border: 1px solid var(--color-border);
     border-radius: 6px;
     margin-bottom: 1rem;
     
-    /* Reseteamos el grid de desktop */
+
     grid-template-columns: 1fr;
     grid-template-areas: unset;
   }
 
-  /* Mostramos las labels en móvil */
+
   .item-row .form-group-item label {
     display: block; 
   }
 
-  /* Limpiamos las reglas de grid sobrantes */
+
   .item-row .form-group-item,
   .item-row .item-row-button {
     grid-area: unset;
     grid-column: unset;
     width: 100%;
     justify-self: unset;
-    box-sizing: border-box; /* Importante */
+    box-sizing: border-box; 
   }
   
   .item-row-button {
-     padding-bottom: 0; /* Reseteo de alineación */
+     padding-bottom: 0; 
   }
   
   .delete-item-btn {
      margin-top: 0.5rem;
-     width: 100%; /* Botón de eliminar ocupa todo el ancho */
-     height: 44px; /* Altura estándar */
+     width: 100%; 
+     height: 44px; 
      font-weight: 600;
   }
 
-  /* --- FIN DE LA CORRECCIÓN DE ARTÍCULOS --- */
 
-  /* (Tu código original responsive para Notas y Acciones) */
   .summary-section {
     grid-template-columns: 1fr;
   }
@@ -344,4 +325,4 @@
     width: 100%;
     text-align: center;
   }
-}
+}   }

@@ -1,7 +1,7 @@
 .app-header{
   display: flex;
-  justify-content: space-between; /* Empuja el título y la nav a los extremos */
-  align-items: center; /* Centra verticalmente el título y la nav */
+  justify-content: space-between; 
+  align-items: center; 
   gap: 2rem; 
   background-color: var(--color-primary);
   color: #ffffff;
@@ -11,22 +11,22 @@
   padding: 2rem;
 }
 
-/* Nuevo estilo para la navegación */
+
 .app-header nav ul {
   display: flex;
-  gap: 1rem; /* Espacio entre los botones */
-  list-style: none; /* Quita los puntos de la lista */
+  gap: 1rem; 
+  list-style: none; 
   margin: 0;
   padding: 0;
 }
 
 .nav-link{
   color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.1); /* Un poco más sutil */
+  background-color: rgba(255, 255, 255, 0.1); 
   padding: 0.5rem 2rem;
   border-radius: 0.25rem;
   text-decoration: none;
-  display: inline-block; /* Asegura que el padding se aplique bien */
+  display: inline-block;
 }
 
 .logo-img {
@@ -41,12 +41,12 @@
 @media (max-width: 760px) {
   .app-header {
     flex-direction: column;
-    align-items: flex-start; /* Alinea a la izquierda en pantallas pequeñas */
+    align-items: flex-start;
   }
   
   .app-header nav ul {
     flex-direction: column;
-    gap: 0.5rem; /* Menos espacio entre los botones en columna */
+    gap: 0.5rem; 
     text-size-adjust: 120%;
 
   }

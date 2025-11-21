@@ -1,8 +1,7 @@
-import React, { useRef, useEffect } from "react"; // <-- CAMBIO 1: Importar useEffect
+import React, { useRef, useEffect } from "react";
 import "./CotizacionA4.css";
-import logo from "../assets/img/logo.png"; // Asumiendo que la ruta es correcta
+import logo from "../assets/img/logo.png";
 
-// --- ¡NUEVAS IMPORTACIONES! ---
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -14,21 +13,15 @@ const CotizacionA4 = ({
 }) => {
   const printRef = useRef();
 
-  // --- CAMBIO 2: Añadimos useEffect para aplicar el "truco" ---
   useEffect(() => {
-    // Esta es la "lógica que ya funciona" que descubriste.
-    // La aplicamos en cuanto se carga el modal para que
-    // los botones se vean bien desde el inicio.
     if (printRef.current) {
       const actions = printRef.current.querySelector(".cotizacion-actions");
       if (actions) {
-        // Esto anula cualquier CSS conflictivo y fuerza la fila
         actions.style.display = "flex";
       }
     }
-  }, []); // El array vacío [] asegura que se ejecute solo una vez
+  }, []);
 
-  // --- Tu función handlePrint se queda igual ---
   const handlePrint = () => {
     const input = printRef.current;
     if (!input) return;
@@ -60,7 +53,6 @@ const CotizacionA4 = ({
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, imgHeight);
 
-      // Aquí es donde el estilo se volvía a aplicar "accidentalmente"
       if (actions) {
         actions.style.display = "flex";
       }
@@ -79,7 +71,6 @@ const CotizacionA4 = ({
     );
   }
 
-  // (El resto de tu código de desestructuración y formatCurrency se mantiene igual)
   const {
     cliente,
     empresa,
@@ -110,7 +101,6 @@ const CotizacionA4 = ({
   return (
     <div className="cotizacion-a4" ref={printRef}>
       <div className="cotizacion-content">
-        {/* --- ENCABEZADO (Sin cambios) --- */}
         <div className="cotizacion-header">
           <img
             src={logo}
@@ -126,7 +116,6 @@ const CotizacionA4 = ({
           </div>
         </div>
 
-        {/* --- TÍTULO Y FECHA (Sin cambios) --- */}
         <div>
           <div style={{ textAlign: "right" }}>
             <p className="cotizacion-date">
@@ -142,7 +131,6 @@ const CotizacionA4 = ({
           </div>
         </div>
 
-        {/* --- DATOS DEL CLIENTE (Sin cambios) --- */}
         <div className="cotizacion-cliente">
           <p>
             <strong>Señores:</strong> {formatCliente("empresa")}
@@ -158,7 +146,6 @@ const CotizacionA4 = ({
           </p>
         </div>
 
-        {/* --- WRAPPER DE TABLA (Sin cambios) --- */}
         <div className="cotizacion-table-responsive-wrapper">
           <table className="cotizacion-table">
             <thead>
@@ -200,7 +187,7 @@ const CotizacionA4 = ({
                 </tr>
               )}
             </tbody>
-            {/* --- TOTALES (Sin cambios) --- */}
+
             <tfoot>
               <tr>
                 <td colSpan="3" className="summary-empty"></td>
@@ -221,7 +208,6 @@ const CotizacionA4 = ({
           </table>
         </div>
 
-        {/* --- PIE DE PÁGINA (Sin cambios) --- */}
         <div className="cotizacion-footer-text">
           <p>Tiempo de Entrega: {tiempo_entrega}</p>
           {observaciones && (
@@ -230,9 +216,7 @@ const CotizacionA4 = ({
         </div>
       </div>
 
-      {/* --- BOTONES DE ACCIÓN (Corregidos) --- */}
-      {/* (Este es el código de tu mensaje anterior, que restaura ambos botones) */}
-      <div className="cotizacion-actions">
+      <div className="cotizacion-actions items-end">
         <button onClick={onBack} className="action-button secondary">
           Cerrar
         </button>
@@ -249,7 +233,7 @@ const CotizacionA4 = ({
         {showPrintButton && (
           <button
             onClick={handlePrint}
-            className="action-button hide-on-mobile"
+            className="action-button show-on-mobile-flex "
           >
             Descargar PDF
           </button>
@@ -258,7 +242,7 @@ const CotizacionA4 = ({
         {showPrintButton && (
           <button
             onClick={handlePrint}
-            className="action-button show-on-mobile-flex"
+            className="action-button hide-on-mobile"
           >
             Descargar PDF
           </button>

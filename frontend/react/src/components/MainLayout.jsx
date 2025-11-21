@@ -1,6 +1,3 @@
-// src/components/MainLayout.jsx
-// ¡Esto es básicamente el código que me acabas de dar!
-
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
@@ -12,9 +9,6 @@ const MainLayout = () => {
       {" "}
       <Header />
       <main className="main-content">
-        {" "}
-        {/* <Outlet> es el "agujero" donde irán las páginas
-            (ListadoCotizaciones, CrearCotizacion, etc.) */}
         <Outlet />
       </main>
       <Footer />

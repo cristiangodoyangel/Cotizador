@@ -1,22 +1,17 @@
-# En cotizacion/views.py
-
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from decimal import Decimal
 from django.shortcuts import get_object_or_404
-from django.db.models import Max # Necesario para 'siguiente_numero'
-from django.http import HttpResponse # Necesario para 'generar_pdf'
+from django.db.models import Max 
+from django.http import HttpResponse 
 
-# Importamos los nuevos modelos y serializers
+
 from .models import Cotizacion, Cliente, ItemCotizacion
 from .serializers import CotizacionSerializer, ClienteSerializer, EmpresaSerializer
 
-# ====================================================================
-# VISTAS DE CLIENTES
-# (Se mantiene igual)
-# ====================================================================
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def listar_clientes(request):
@@ -30,9 +25,6 @@ def listar_clientes(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# ====================================================================
-# VISTAS DE COTIZACIÓN (CRUD COMPLETO)
-# ====================================================================
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -48,12 +40,6 @@ def listar_cotizaciones(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-#
-# --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-#
-# Borramos 'obtener_cotizacion' y 'eliminar_cotizacion'
-# y las reemplazamos por esta única función:
-#
 
 @api_view(['GET', 'DELETE']) 
 @permission_classes([IsAuthenticated])
@@ -62,7 +48,7 @@ def cotizacion_detalle(request, pk):
     Obtiene (GET) o Elimina (DELETE) una cotización específica.
     """
     try:
-        # Usamos la lógica de tu 'obtener_cotizacion' original para la búsqueda
+   
         cotizacion = get_object_or_404(
             Cotizacion.objects.select_related('cliente', 'empresa').prefetch_related('items'), 
             pk=pk
@@ -70,24 +56,21 @@ def cotizacion_detalle(request, pk):
     except Exception as e:
         return Response({"error": "Cotización no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
-    # --- Lógica de Métodos ---
+
     if request.method == 'GET':
-        # Esta es la lógica de tu antigua 'obtener_cotizacion'
+
         serializer = CotizacionSerializer(cotizacion)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'DELETE':
-        # Esta es la lógica de tu antigua 'eliminar_cotizacion'
+
         try:
             cotizacion.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            # Captura errores de borrado (ej. si está protegida por 'on_delete=models.PROTECT')
+
             return Response({"error": f"No se pudo eliminar la cotización: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-#
-# --- FIN DE LA CORRECCIÓN ---
-#
 
 
 @api_view(['POST'])
@@ -109,7 +92,7 @@ def crear_cotizacion_completa(request):
         }
         items_data = data.get('items', [])
 
-        # Lógica "Get or Create" para el Cliente
+
         if not cliente_data['email']:
              cliente_obj = Cliente.objects.create(**cliente_data)
         else:
@@ -121,7 +104,7 @@ def crear_cotizacion_completa(request):
                 Cliente.objects.filter(id=cliente_obj.id).update(**cliente_data)
                 cliente_obj.refresh_from_db()
 
-        # Creamos la Cotización
+
         cotizacion = Cotizacion.objects.create(
             cliente=cliente_obj,
             asunto=data.get('asunto'),
@@ -129,7 +112,6 @@ def crear_cotizacion_completa(request):
             tiempo_entrega=data.get('tiempo_entrega')
         )
 
-        # Creamos los Items
         for item_data in items_data:
             cantidad_item = item_data.get('cantidad', 0)
             precio_item = item_data.get('precio_unitario', 0)  
@@ -140,7 +122,7 @@ def crear_cotizacion_completa(request):
                 precio_unitario=Decimal(precio_item)
             )
             
-        # Guardamos la cotización una última vez para disparar el recálculo de totales
+
         cotizacion.save()
 
         serializer = CotizacionSerializer(cotizacion)
@@ -149,10 +131,6 @@ def crear_cotizacion_completa(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-# ====================================================================
-# VISTAS DE UTILIDAD (PDF, Siguiente Número, etc.)
-# (Se mantienen igual)
-# ====================================================================
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

@@ -19,10 +19,10 @@ def generar_pdf_cotizacion(cotizacion):
     buffer = io.BytesIO()
     width, height = A4
 
-    # --- Paleta de Colores y Estilos ---
+
     styles = getSampleStyleSheet()
-    color_principal = colors.HexColor('#2E3B4E') # Azul oscuro
-    color_secundario = colors.HexColor('#4A90E2') # Azul más claro
+    color_principal = colors.HexColor('#2E3B4E') 
+    color_secundario = colors.HexColor('#4A90E2') 
     color_texto = colors.HexColor('#333333')
     color_gris_claro = colors.HexColor('#F5F5F5')
 
@@ -34,8 +34,8 @@ def generar_pdf_cotizacion(cotizacion):
 
     story = []
 
-    # --- Encabezado ---
-    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'logo.png') # Asegúrate que esta ruta sea correcta
+
+    logo_path = os.path.join(settings.BASE_DIR, 'frontend', 'public', 'img', 'logo.png') 
     logo = Image(logo_path, width=2*inch, height=0.8*inch) if os.path.exists(logo_path) else Paragraph("Yajasa Technology", styles['h2'])
     logo.hAlign = 'LEFT'
 
@@ -54,7 +54,7 @@ def generar_pdf_cotizacion(cotizacion):
     story.append(header_table)
     story.append(Spacer(1, 0.4*inch))
 
-    # --- Información del Cliente y Empresa ---
+
     empresa_info = f"""
         <b>{cotizacion.empresa.nombre}</b><br/>
         RUT: {cotizacion.empresa.rut}<br/>
@@ -74,11 +74,10 @@ def generar_pdf_cotizacion(cotizacion):
     story.append(info_table)
     story.append(Spacer(1, 0.3*inch))
 
-    # --- Asunto de la cotización ---
-    story.append(Paragraph(f"<b>Asunto:</b> {cotizacion.asunto}", styles['Normal_Bold']))
-    storyappend(Spacer(1, 0.3*inch))
 
-    # --- Tabla de ítems ---
+    story.append(Paragraph(f"<b>Asunto:</b> {cotizacion.asunto}", styles['Normal_Bold']))
+    story.append(Spacer(1, 0.3*inch))
+
     story.append(Paragraph("<b>DETALLE DE LA COTIZACIÓN</b>", styles['Subtitulo']))
     items_data = [[
         Paragraph('<b>Ítem</b>', styles['Normal']),
@@ -111,7 +110,7 @@ def generar_pdf_cotizacion(cotizacion):
     story.append(items_table)
     story.append(Spacer(1, 0.2*inch))
 
-    # --- Totales ---
+
     totales_data = [
         ['', Paragraph('<b>Valor Neto Total</b>', styles['Body_Right_Bold']), Paragraph(f"${cotizacion.subtotal:,.0f}".replace(',', '.'), styles['Normal_Right'])],
         ['', Paragraph('<b>IVA (19%)</b>', styles['Body_Right_Bold']), Paragraph(f"${cotizacion.iva:,.0f}".replace(',', '.'), styles['Normal_Right'])],
@@ -127,7 +126,7 @@ def generar_pdf_cotizacion(cotizacion):
     story.append(totales_table)
     story.append(Spacer(1, 0.4*inch))
 
-    # --- Observaciones y Tiempo de entrega ---
+
     if cotizacion.observaciones:
         story.append(Paragraph("<b>Observaciones</b>", styles['Subtitulo']))
         story.append(Paragraph(cotizacion.observaciones, styles['Normal']))
@@ -147,7 +146,7 @@ def generar_pdf_cotizacion(cotizacion):
         canvas.drawCentredString(width/2, 0.25*inch, f"{cotizacion.empresa.nombre} | {cotizacion.empresa.email} | {cotizacion.empresa.telefono}")
         canvas.restoreState()
 
-    # --- Construir PDF ---
+
     doc = SimpleDocTemplate(
         buffer,
         pagesize=A4,

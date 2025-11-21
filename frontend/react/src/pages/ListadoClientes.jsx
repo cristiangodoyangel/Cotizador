@@ -12,8 +12,6 @@ const ListadoClientes = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        // La API 'getClientes' ahora devuelve la lista correcta
-        // desde la tabla 'Cliente' de la base de datos.
         const data = await getClientes();
         setClientes(data);
       } catch (err) {
@@ -26,7 +24,6 @@ const ListadoClientes = () => {
     fetchClientes();
   }, []);
 
-  // Lógica de paginación
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = clientes.slice(indexOfFirstItem, indexOfLastItem);
@@ -34,7 +31,6 @@ const ListadoClientes = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // --- CORRECCIÓN 1: Mover la lógica de carga y error DENTRO del layout ---
   return (
     <div className="page-container">
       <div className="page-header">
@@ -59,9 +55,7 @@ const ListadoClientes = () => {
               </thead>
               <tbody>
                 {currentItems.map((cliente) => (
-                  // --- CORRECCIÓN 2: Usar 'cliente.id' como key ---
                   <tr key={cliente.id}>
-                    {/* --- CORRECCIÓN 3: Usar los nombres de campo correctos --- */}
                     <td>{cliente.empresa || "N/A"}</td>
                     <td>{cliente.nombre_contacto}</td>
                     <td>{cliente.email}</td>

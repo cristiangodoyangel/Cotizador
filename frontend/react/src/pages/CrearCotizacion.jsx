@@ -364,12 +364,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
             + Agregar Artículo
           </button>
         </div>
-        {/* // ====================================================================
-        // --- FIN DE LA CORRECCIÓN DE ARTÍCULOS COTIZADOS ---
-        // ====================================================================
-        */}
 
-        {/* Notas y Totales */}
         <div className="summary-section">
           <div className="card notes-card">
             <label>Notas / Términos y Condiciones</label>
@@ -383,22 +378,18 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
             <div className="total-row">
               <span>Subtotal</span>
               <span>{formatCurrency(subtotal)}</span>{" "}
-              {/* Usamos la función de formato */}
             </div>
             <div className="total-row">
               <span>Impuestos (IVA 19%)</span>
               <span>{formatCurrency(impuestos)}</span>{" "}
-              {/* Usamos la función de formato */}
             </div>
             <div className="total-row total">
               <strong>Total</strong>
               <strong>{formatCurrency(total)}</strong>{" "}
-              {/* Usamos la función de formato */}
             </div>
           </div>
         </div>
 
-        {/* Acciones */}
         <div className="form-actions">
           <button type="submit" className="btn-primary">
             Guardar Cotización

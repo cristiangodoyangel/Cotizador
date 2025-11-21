@@ -1,11 +1,8 @@
-// src/pages/Login.jsx
-
 import React, { useState, useEffect } from "react";
-// 1. Importa el hook de autenticación que acabamos de crear
 import { useAuth } from "../context/AuthContext";
-import { loginUser } from "../api"; // Tu API sigue igual
+import { loginUser } from "../api";
 import "./Login.css";
-import logo from "../assets/img/logo.png"; // (Descomenta si tienes logo)
+import logo from "../assets/img/logo.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -13,8 +10,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 2. Obtenemos la función 'login' del contexto
-  // Ya no necesitamos 'useNavigate' aquí
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -23,14 +18,8 @@ const Login = () => {
     setError(null);
 
     try {
-      // 3. Llamamos a la API
       const data = await loginUser(username, password);
 
-      // 4. ¡Usamos la función 'login' del contexto!
-      // Esta simple línea hace todo:
-      // - Guarda tokens en localStorage
-      // - Actualiza el estado global
-      // - Redirige a "/"
       login(data.access, data.refresh);
     } catch (err) {
       setError(err.message || "Usuario o contraseña incorrectos");

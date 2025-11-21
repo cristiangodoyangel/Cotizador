@@ -1,13 +1,3 @@
-/*
-  Hoja de Estilos para CotizacionA4.jsx
-  - Estilos para la vista en pantalla (simulando una hoja A4).
-  - Estilos para el contenido de la cotización.
-  - SIN ESTILOS DE IMPRESIÓN (se manejan en Listado.css)
-*/
-
-/* ============================================= */
-/* == 1. ESTILOS PARA LA VISTA EN PANTALLA == */
-/* ============================================= */
 
 .titulos {
   display: flex;
@@ -44,14 +34,11 @@
   font-weight: 500;
 }
 
-/* Esta regla es para la VISTA EN PANTALLA.
-  El min-height es lo que causa la página extra si no se
-  sobrescribe correctamente en la impresión.
-*/
+
 .cotizacion-a4 {
   background: white;
   width: 210mm;
-  min-height: 297mm; /* <-- CULPABLE EN PANTALLA */
+  min-height: 297mm; 
   margin: 0 auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   font-family: Arial, sans-serif;
@@ -60,13 +47,13 @@
   box-sizing: border-box;
 }
 
-/* Contenedor interno que define los márgenes del documento. */
+
 .cotizacion-content {
   padding: 20mm;
   box-sizing: border-box;
 }
 
-/* Contenedor para los botones de acción (Imprimir, Cerrar). */
+
 .cotizacion-actions {
   padding: 1rem 20mm;
   text-align: right;
@@ -96,9 +83,6 @@
   background-color: #6c757d;
 }
 
-/* ============================================= */
-/* == 2. ESTILOS DEL CONTENIDO DE LA COTIZACIÓN == */
-/* ============================================= */
 
 .cotizacion-header {
   display: flex;
@@ -199,12 +183,4 @@
   padding-top: 1rem;
   color: #777;
 }
-
-/*
-  EL BLOQUE @media print FUE ELIMINADO DE AQUÍ 
-  PARA EVITAR CONFLICTOS.
-*/
-/*
-  Pega esto al final de tu archivo CotizacionA4.css
-*/
 

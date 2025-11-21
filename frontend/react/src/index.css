@@ -1,17 +1,10 @@
-/* stylelint-disable-next-line at-rule-no-unknown 
-@tailwind base;
- stylelint-disable-next-line at-rule-no-unknown 
-@tailwind components;
- stylelint-disable-next-line at-rule-no-unknown 
-@tailwind utilities; */
-
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color: #213547;
-  background-color: #f8f9fa; /* Un gris muy claro para el fondo general */
+  background-color: #f8f9fa;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,10 +17,10 @@ body {
   margin: 0;
 }
 
-/* Definición de variables de color para usar en otros CSS si es necesario */
+
 :root {
   --color-primary: #103b52;
-  --color-primary-hover: #e9ecef; /* Gris claro para hover */
+  --color-primary-hover: #e9ecef; 
   --color-background: #ffffff;
   --color-text: #343a40;
   --color-border: #dee2e6;
@@ -36,11 +29,11 @@ body {
 .App {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* <-- ¡Esta es la clave! */
+  min-height: 100vh; 
 }
 
 .main-content {
-  flex-grow: 1; /* <-- ¡Esta es la segunda clave! */
+  flex-grow: 1; 
 }
 
 

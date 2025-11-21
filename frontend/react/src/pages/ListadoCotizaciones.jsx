@@ -16,17 +16,14 @@ const ListadoCotizaciones = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estados para el modal PDF
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
 
-  // --- Estados para el modal de eliminación ---
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
-  // --- FIN ---
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -66,7 +63,6 @@ const ListadoCotizaciones = () => {
     };
   }, [modalVisible]);
 
-  // --- CORRECCIÓN (1/3): FORMATO DE MONEDA SIN DECIMALES ---
   const formatCurrency = (value) => {
     const parsedValue = parseFloat(value);
     if (isNaN(parsedValue)) {
@@ -75,7 +71,7 @@ const ListadoCotizaciones = () => {
     return parsedValue.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
-      maximumFractionDigits: 0, // No mostrar decimales
+      maximumFractionDigits: 0,
       minimumFractionDigits: 0,
     });
   };
@@ -147,7 +143,6 @@ const ListadoCotizaciones = () => {
     setSortConfig({ key, direction });
   };
 
-  // --- Lógica de eliminación (sin cambios) ---
   const openDeleteConfirmModal = (cotizacionId) => {
     const quote = cotizaciones.find((c) => c.id === cotizacionId);
     setQuoteToDelete(quote);
@@ -178,7 +173,6 @@ const ListadoCotizaciones = () => {
     }
   };
 
-  // --- Lógica de ver PDF (sin cambios) ---
   const handleVerPdf = async (cotizacionId) => {
     setModalVisible(true);
     setLoadingModal(true);
@@ -196,17 +190,13 @@ const ListadoCotizaciones = () => {
 
   const closeModal = () => setModalVisible(false);
 
-  // --- CORRECCIÓN (2/3): NUEVA FUNCIÓN PARA ELIMINAR DESDE MODAL ---
   const handleDeleteFromModal = () => {
-    // 1. Cierra el modal actual (el del PDF)
     closeModal();
 
-    // 2. Abre el modal de confirmación de borrado
     if (selectedCotizacion) {
       openDeleteConfirmModal(selectedCotizacion.id);
     }
   };
-  // --- FIN DE LA CORRECCIÓN ---
 
   return (
     <div className="page-container">
@@ -229,9 +219,9 @@ const ListadoCotizaciones = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.25" // Corregido stroke-width a strokeWidth
-                strokeLinecap="round" // Corregido stroke-linecap a strokeLinecap
-                strokeLinejoin="round" // Corregido stroke-linejoin a strokeLinejoin
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="icon-tabler icon-tabler-search"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -251,7 +241,6 @@ const ListadoCotizaciones = () => {
           <div className="card">
             <div className="table-responsive">
               <table className="data-table">
-                {/* TU CÓDIGO '<thead>' CON 'hide-on-mobile' (SIN CAMBIOS) */}
                 <thead>
                   <tr>
                     <th onClick={() => requestSort("numero")}>
@@ -281,7 +270,6 @@ const ListadoCotizaciones = () => {
                     <th className="hide-on-mobile">Acciones</th>
                   </tr>
                 </thead>
-                {/* TU CÓDIGO '<tbody>' CON 'clickable-id' Y 'hide-on-mobile' (SIN CAMBIOS) */}
                 <tbody>
                   {currentItems.length > 0 ? (
                     currentItems.map((cot) => (
@@ -330,7 +318,6 @@ const ListadoCotizaciones = () => {
                 </tbody>
               </table>
             </div>
-            {/* PAGINACIÓN (SIN CAMBIOS) */}
             {totalPages > 1 && (
               <div className="pagination">
                 <button
@@ -364,7 +351,6 @@ const ListadoCotizaciones = () => {
         </>
       )}
 
-      {/* --- MODAL DE VER PDF --- */}
       {modalVisible && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -378,7 +364,6 @@ const ListadoCotizaciones = () => {
                 <CotizacionA4
                   cotizacion={selectedCotizacion}
                   onBack={closeModal}
-                  // --- CORRECCIÓN (3/3): PASAR LA PROP AL HIJO ---
                   onDelete={handleDeleteFromModal}
                 />
               )
@@ -387,7 +372,6 @@ const ListadoCotizaciones = () => {
         </div>
       )}
 
-      {/* --- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN (SIN CAMBIOS) --- */}
       {isDeleteModalOpen && (
         <div className="modal-overlay" onClick={closeDeleteModal}>
           <div

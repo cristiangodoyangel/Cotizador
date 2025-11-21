@@ -1,4 +1,4 @@
-/* Estilos para el contenedor del login */
+
 .login-container {
     display: flex;
     justify-content: center;
@@ -7,7 +7,7 @@
     background-color: #f0f2f5;
   }
   
-  /* Estilos para el formulario de login */
+
   .login-form {
     padding: 2rem;
     background: white;
@@ -22,8 +22,7 @@
     margin-bottom: 1.5rem;
     color: #333;
   }
-  
-  /* Estilos para los grupos de inputs */
+
   .input-group {
     margin-bottom: 1.5rem;
     text-align: left;
@@ -43,7 +42,7 @@
     font-size: 1rem;
   }
   
-  /* Estilos para el botón de login */
+
   .login-button {
     width: 100%;
     padding: 0.75rem;
@@ -60,7 +59,7 @@
     background-color: #0a2644;
   }
   
-  /* Estilos para el mensaje de error */
+
   .error-message {
     color: red;
     margin-top: 1rem;
