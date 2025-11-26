@@ -1,5 +1,4 @@
-let API_BASE =
-  import.meta.env.VITE_API_URL || "https://cotizador.htgrafica.cl/api";
+let API_BASE = import.meta.env.VITE_API_URL || "https://api.htgrafica.cl/api";
 
 // Aseguramos que siempre se use HTTPS
 if (API_BASE.startsWith("http:")) {
