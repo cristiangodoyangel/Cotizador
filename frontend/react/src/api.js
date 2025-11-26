@@ -1,4 +1,10 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+let API_BASE =
+  import.meta.env.VITE_API_URL || "https://cotizador.htgrafica.cl/api";
+
+// Aseguramos que siempre se use HTTPS
+if (API_BASE.startsWith("http:")) {
+  API_BASE = API_BASE.replace("http:", "https:");
+}
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("accessToken");
