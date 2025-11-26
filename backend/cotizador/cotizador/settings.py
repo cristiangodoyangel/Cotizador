@@ -154,18 +154,14 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# REST Framework configuration
-# REST Framework configuration
+
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -174,37 +170,36 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     ],
     
-    # --- AÑADE ESTAS LÍNEAS ---
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # Le dice a DRF que use JWT para la autenticación
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # Bloquea todas las APIs por defecto.
-        # Solo usuarios autenticados (con un token válido) podrán acceder.
+
         'rest_framework.permissions.IsAuthenticated',
     ],
-    # --- FIN DE LÍNEAS A AÑADIR ---
+   
 }
 
-# CORS configuration for Astro frontend
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", # React dev server
+    "http://localhost:5173", 
     "http://localhost:3000",
-    "http://localhost:4321",  # Astro default port
+    "http://localhost:4321", 
     "http://127.0.0.1:3000",
     "http://127.0.0.1:4321",
     "http://127.0.0.1:5173",
+    "https://cotizador.htgrafica.cl",
 ]
 
-# CSRF configuration
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://cotizador.htgrafica.cl",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Media files configuration for PDF generation
+
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
