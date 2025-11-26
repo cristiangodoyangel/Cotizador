@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { crearCotizacion } from "../api";
 import "./Home.css";
+import logo from "../assets/img/logo2.webp";
 
 const Home = ({ onCreateCotizacion }) => {
   const [cliente, setCliente] = useState({

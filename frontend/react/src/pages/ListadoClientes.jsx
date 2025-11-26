@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getClientes } from "../api";
 import "./Listado.css";
+import logo from "../assets/img/logo2.webp";
 
 const ListadoClientes = () => {
   const [clientes, setClientes] = useState([]);

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { crearCotizacionCompleta, getClientes } from "../api";
 import "./CrearCotizacion.css";
+import logo from "../assets/img/logo2.webp";
 
 const CrearCotizacion = ({ onCotizacionCreada }) => {
   const navigate = useNavigate();
