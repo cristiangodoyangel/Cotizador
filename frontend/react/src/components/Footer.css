@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
-  background-color: var(--color-primary);
+  background-color: rgb(94, 94, 94);
   color: #ffffff;
   width: 100%;
   max-width: 1042px;

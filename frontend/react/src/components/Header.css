@@ -3,7 +3,7 @@
   justify-content: space-between; 
   align-items: center; 
   gap: 2rem; 
-  background-color: black;
+  background-color: rgb(94, 94, 94);
   color: #ffffff;
   width: 100%;
   max-width: 1042px;
@@ -22,7 +22,7 @@
 
 .nav-link{
   color: #ffffff;
-  background-color: rgb(0, 0, 0); 
+  background-color: rgb(2, 0, 0); 
   padding: 0.5rem 2rem;
   border-radius: 0.25rem;
   text-decoration: none;
@@ -35,7 +35,7 @@
 
 .nav-link:hover {
   background-color: var(--color-primary-hover);
-  color: var(--color-primary);
+  color: rgb(255, 255, 255);
 }
 
 @media (max-width: 760px) {

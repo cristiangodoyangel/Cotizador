@@ -240,6 +240,10 @@
   border-color: #adb5bd;
 }
 
+.informacion{
+  color: red;
+}
+
 
 
 @media (max-width: 768px) {
@@ -325,4 +329,10 @@
     width: 100%;
     text-align: center;
   }
-}   }
+}   
+
+.informacion{
+  color: red;
+}
+
+}

@@ -131,6 +131,7 @@ const CotizacionA4 = ({
           </div>
         </div>
 
+        <h2 className="text-red-500">Información del Cliente</h2>
         <div className="cotizacion-cliente">
           <p>
             <strong>Señores:</strong> {formatCliente("empresa")}

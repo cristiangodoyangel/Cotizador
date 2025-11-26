@@ -178,12 +178,9 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="cotizacion-form">
-        {/* ... (El formulario de cliente se queda igual, los estados están bien) ... */}
-
         <div className="card">
-          <h2>Información del Cliente</h2>
-          {/* (Tu JSX para el cliente está bien) */}
-          {/* ... */}
+          <h2 className="informacion">Información del Cliente</h2>
+
           <div className="form-row">
             <div className="form-group">
               <label>Nombre del Cliente / Empresa</label>

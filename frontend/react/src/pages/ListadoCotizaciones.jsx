@@ -5,7 +5,7 @@ import {
   eliminarCotizacion,
   obtenerCotizacion,
 } from "../api";
-import "./Listado.css";
+/* import "./Listado.css"; */
 import CotizacionA4 from "./CotizacionA4";
 
 const ListadoCotizaciones = () => {
@@ -199,8 +199,8 @@ const ListadoCotizaciones = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
+    <div className="page-container bg-pink-500">
+      <div className="page-header bg-pink-500">
         <h1 className="page-titulo">Listado de Cotizaciones</h1>
       </div>
 
