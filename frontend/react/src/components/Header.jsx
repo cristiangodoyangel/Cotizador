@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom"; // Importar Link y useNavigate
 import { useAuth } from "../context/AuthContext"; // Importar el contexto
 import "./Header.css";
-import logo from "../assets/img/logo.webp";
+import logo from "../assets/img/logo2.webp";
 
 function Header() {
   const { logout } = useAuth();

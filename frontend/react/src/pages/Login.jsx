@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../api";
 import "./Login.css";
-import logo from "../assets/img/logo.webp";
+import logo from "../assets/img/logo2.webp";
 
 const Login = () => {
   const [username, setUsername] = useState("");
