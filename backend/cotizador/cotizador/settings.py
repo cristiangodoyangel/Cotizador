@@ -23,7 +23,12 @@ SECRET_KEY = "django-insecure-rb!2lc40o93e2hf$%oodc-(92l962n23f^lp7$5w+@l4*wna00
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['yajasatechnology.cl', 'www.yajasatechnology.cl', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'api.htgrafica.cl',  
+    '136.112.98.144',  
+    'localhost', 
+    '127.0.0.1'
+]
 
 
 
@@ -74,30 +79,12 @@ WSGI_APPLICATION = "cotizador.wsgi.application"
 
 
 
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.hctcotwzdwummkmzczec', 
-        'PASSWORD': 'Calama1..12',               
-        'HOST': 'aws-1-us-east-2.pooler.supabase.com', 
-
-        
-        'PORT': '5432',
-    }
-}
-"""
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
-
 
 
 
@@ -137,13 +124,11 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-# Media files configuration for PDF generation
+
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = "es-cl"
 
