@@ -16,20 +16,17 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   const [tiempoEntrega, setTiempoEntrega] = useState("");
   const [asunto, setAsunto] = useState("");
 
-  // --- CAMBIO 1: Usar los nombres de campo correctos del modelo ItemCotizacion ---
   const [items, setItems] = useState([
-    { id: 1, cantidad: 1, descripcion: "", precio_unitario: 0 },
+    { id: 1, cantidad: 1, descripcion: "", precio_unitario: "" },
   ]);
 
   const [notas, setNotas] = useState("");
 
-  // Estados para la búsqueda de clientes
   const [clientes, setClientes] = useState([]);
   const [busquedaCliente, setBusquedaCliente] = useState("");
   const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
   const [mostrarResultados, setMostrarResultados] = useState(false);
 
-  // Función para resetear el formulario
   const resetFormulario = () => {
     setClienteEmpresa("");
     setClienteContacto("");
@@ -38,17 +35,16 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     setClienteTelefono("");
     setAsunto("");
     setTiempoEntrega("1 Día, Esperando que la oferta sea de su aceptación");
-    // --- CAMBIO 2: Usar los nombres de campo correctos ---
-    setItems([{ id: 1, cantidad: 1, descripcion: "", precio_unitario: 0 }]);
+
+    setItems([{ id: 1, cantidad: 1, descripcion: "", precio_unitario: "" }]);
     setNotas("");
   };
 
-  // Cargar clientes al montar el componente
   useEffect(() => {
     const cargarClientes = async () => {
       try {
         const data = await getClientes();
-        setClientes(data); // getClientes ahora devuelve clientes únicos desde la API
+        setClientes(data);
       } catch (error) {
         console.error("Error al cargar clientes:", error);
       }
@@ -65,10 +61,9 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   const handleAddItem = () => {
     const newId =
       items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1;
-    // --- CAMBIO 3: Usar los nombres de campo correctos ---
     setItems([
       ...items,
-      { id: newId, cantidad: 1, descripcion: "", precio_unitario: 0 },
+      { id: newId, cantidad: 1, descripcion: "", precio_unitario: "" },
     ]);
   };
 
@@ -77,7 +72,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   };
 
   const { subtotal, impuestos, total } = useMemo(() => {
-    // --- CAMBIO 4: Usar 'precio_unitario' (snake_case) para el cálculo ---
     const sub = items.reduce(
       (sum, item) => sum + Number(item.cantidad) * Number(item.precio_unitario),
       0
@@ -87,7 +81,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     return { subtotal: sub, impuestos: imp, total: tot };
   }, [items]);
 
-  // Estandarizamos el formato de moneda a es-CL (peso chileno)
   const formatCurrency = (value) => {
     const parsedValue = parseFloat(value);
     if (isNaN(parsedValue)) {
@@ -96,7 +89,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     return parsedValue.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
-      minimumFractionDigits: 0, // Opcional: para no mostrar decimales ($105.910)
+      minimumFractionDigits: 0,
     });
   };
 
@@ -104,7 +97,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     const query = e.target.value;
     setBusquedaCliente(query);
     if (query.length > 1) {
-      // --- CAMBIO 5: Usar los nuevos campos del modelo Cliente ('empresa', 'nombre_contacto') ---
       const filtrados = clientes.filter(
         (c) =>
           (c.empresa &&
@@ -121,7 +113,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
   };
 
   const handleSelectCliente = (cliente) => {
-    // --- CAMBIO 6: Usar los nuevos campos del modelo Cliente ---
     setClienteEmpresa(cliente.empresa || "");
     setClienteContacto(cliente.nombre_contacto || "");
     setClienteEmail(cliente.email || "");
@@ -135,28 +126,23 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
     e.preventDefault();
 
     const payload = {
-      // Campos del cliente (el backend espera 'cliente_nombre', etc. como definimos en la view)
       cliente_nombre: clienteContacto,
       cliente_empresa: clienteEmpresa,
       cliente_email: clienteEmail,
       cliente_telefono: clienteTelefono,
       cliente_direccion: clienteDireccion,
 
-      // Detalles de la cotización
       asunto: asunto,
       tiempo_entrega: tiempoEntrega,
       observaciones: notas,
-
-      // Totales (se recalcularán en el backend, pero los enviamos)
       subtotal: subtotal,
       iva: impuestos,
       total: total,
 
-      // --- CAMBIO 7: Enviar los nombres de campo correctos al backend ---
       items: items.map((item) => ({
         cantidad: item.cantidad,
-        descripcion: item.descripcion, // 'caracteristica' -> 'descripcion'
-        precio_unitario: item.precio_unitario, // 'precioUnitario' -> 'precio_unitario'
+        descripcion: item.descripcion,
+        precio_unitario: item.precio_unitario,
       })),
     };
 
@@ -230,7 +216,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           </div>
         </div>
 
-        {/* ... (Detalles de la cotización se queda igual) ... */}
         <div className="card">
           <h2>Detalles de la Cotización</h2>
           <div className="form-row">
@@ -259,7 +244,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
           <h2>Artículos Cotizados</h2>
           <div className="items-table">
             <div className="items-header">
-              {/* (Las cabeceras de escritorio se mantienen, se ocultarán en móvil) */}
               <span>Cantidad</span>
               <span>Descripción</span>
               <span>Precio Unitario</span>
@@ -268,7 +252,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
             </div>
             {items.map((item) => (
               <div key={item.id} className="item-row">
-                {/* --- 1. CANTIDAD (con Label y Placeholder) --- */}
                 <div className="form-group-item item-cantidad">
                   <label htmlFor={`cantidad-${item.id}`}>Cantidad</label>
                   <input
@@ -287,7 +270,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                   />
                 </div>
 
-                {/* --- 2. DESCRIPCIÓN (con Label y Placeholder) --- */}
                 <div className="form-group-item item-descripcion">
                   <label htmlFor={`descripcion-${item.id}`}>Descripción</label>
                   <input
@@ -301,7 +283,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                   />
                 </div>
 
-                {/* --- 3. PRECIO UNITARIO (con Label y Placeholder) --- */}
                 <div className="form-group-item item-precio">
                   <label htmlFor={`precio_unitario-${item.id}`}>
                     P. Unitario
@@ -323,7 +304,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                   />
                 </div>
 
-                {/* --- 4. IMPORTE (con Label) --- */}
                 <div className="form-group-item item-total">
                   <label htmlFor={`importe-${item.id}`}>Importe</label>
                   <input
@@ -337,7 +317,6 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
                   />
                 </div>
 
-                {/* --- 5. BOTÓN DE ELIMINAR (con wrapper) --- */}
                 <div className="form-group-item item-row-button">
                   {items.length > 1 ? (
                     <button
