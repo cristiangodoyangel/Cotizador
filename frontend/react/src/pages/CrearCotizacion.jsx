@@ -142,7 +142,7 @@ const CrearCotizacion = ({ onCotizacionCreada }) => {
       items: items.map((item) => ({
         cantidad: item.cantidad,
         descripcion: item.descripcion,
-        precio_unitario: item.precio_unitario,
+        precio_unitario: item.precio_unitario === "" ? 0 : Number(item.precio_unitario),
       })),
     };
 

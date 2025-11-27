@@ -125,7 +125,7 @@ const CotizacionA4 = ({
           </div>
           <div className="titulos">
             <h2 className="titulo">COTIZACIÓN</h2>
-            <p className="cotizacion-number">
+            <p className="cotizacion-number text-red-500">
               <strong>N°:</strong> {numero}
             </p>
           </div>

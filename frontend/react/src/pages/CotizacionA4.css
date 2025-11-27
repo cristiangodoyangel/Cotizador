@@ -119,8 +119,8 @@
   margin-bottom: 1.5rem;
   padding: 0.8rem 1rem;
   border-radius: 4px;
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #adadad;
+  color: #000000;
   font-size: 0.9em;
   border: 0.5px solid #061c32;
 }
@@ -144,8 +144,8 @@
 }
 
 .cotizacion-table th {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #adadad;
+  color: #000000;
   font-weight: 600;
   -webkit-print-color-adjust: exact !important; 
   print-color-adjust: exact !important;
