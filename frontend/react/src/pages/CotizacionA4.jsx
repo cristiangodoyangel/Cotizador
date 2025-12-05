@@ -104,7 +104,7 @@ const CotizacionA4 = ({
         <div className="cotizacion-header">
           <img
             src={logo}
-            alt="Logo Yajasa"
+            alt="Logo HT Grafica"
             className="cotizacion-logo-yasaja"
           />
           <div className="cotizacion-company-info">

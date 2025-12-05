@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getClientes } from "../api";
+import { getClientes, eliminarCliente } from "../api";
 import "./Listado.css";
 import logo from "../assets/img/logo2.webp";
 
@@ -9,6 +9,11 @@ const ListadoClientes = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -32,6 +37,35 @@ const ListadoClientes = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const openDeleteConfirmModal = (cliente) => {
+    setClientToDelete(cliente);
+    setIsDeleteModalOpen(true);
+    setDeleteError(null);
+  };
+
+  const closeDeleteModal = () => {
+    if (isDeleting) return;
+    setIsDeleteModalOpen(false);
+    setClientToDelete(null);
+    setDeleteError(null);
+    setIsDeleting(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!clientToDelete) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await eliminarCliente(clientToDelete.id);
+      setClientes(clientes.filter((c) => c.id !== clientToDelete.id));
+      closeDeleteModal();
+    } catch (err) {
+      setDeleteError("Error al eliminar el cliente: " + err.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -52,6 +86,7 @@ const ListadoClientes = () => {
                   <th>Contacto</th>
                   <th>Email</th>
                   <th>Teléfono</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -61,6 +96,14 @@ const ListadoClientes = () => {
                     <td>{cliente.nombre_contacto}</td>
                     <td>{cliente.email}</td>
                     <td>{cliente.telefono}</td>
+                    <td>
+                      <button
+                        onClick={() => openDeleteConfirmModal(cliente)}
+                        className="btn-action2"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -82,6 +125,47 @@ const ListadoClientes = () => {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="modal-overlay" onClick={closeDeleteModal}>
+          <div
+            className="modal-content delete-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={closeDeleteModal} className="modal-close-btn">
+              &times;
+            </button>
+            <h3>Confirmar Eliminación</h3>
+            <p>
+              ¿Estás seguro de que deseas eliminar al cliente{" "}
+              <strong>
+                {clientToDelete?.empresa || clientToDelete?.nombre_contacto}
+              </strong>
+              ?
+            </p>
+            <p>Esta acción no se puede deshacer.</p>
+
+            {deleteError && <p className="modal-error">{deleteError}</p>}
+
+            <div className="modal-actions">
+              <button
+                className="modal-btn modal-btn-cancel"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+              >
+                Cancelar
+              </button>
+              <button
+                className="modal-btn modal-btn-confirm"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Eliminando..." : "Sí, eliminar"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

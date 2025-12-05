@@ -139,3 +139,13 @@ export async function getClientes() {
   if (!res.ok) throw new Error("Error al obtener clientes");
   return await res.json();
 }
+
+export async function eliminarCliente(pk) {
+  const res = await fetch(`${API_BASE}/clientes/${pk}/`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) throw new Error("Error al eliminar cliente");
+  return true;
+}
